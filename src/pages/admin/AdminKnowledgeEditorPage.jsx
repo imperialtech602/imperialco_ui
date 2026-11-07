@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import {
@@ -19,6 +20,7 @@ import {
   fetchAdminPost,
   updateKnowledgePost,
 } from '@/api/knowledge'
+import { adminApi } from '@/features/admin/adminApi'
 import Button from '@/components/ui/Button'
 import RichTextEditor from '@/components/admin/RichTextEditor'
 import TagInput, { tagsFromPost } from '@/components/admin/TagInput'
@@ -119,7 +121,11 @@ export default function AdminKnowledgeEditorPage() {
   const { id } = useParams()
   const isNew = !id || id === 'new'
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const dragRef = useRef(null)
+  const refreshKnowledgeList = () => {
+    dispatch(adminApi.util.invalidateTags(['Knowledge']))
+  }
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [title, setTitle] = useState('')
@@ -286,6 +292,7 @@ export default function AdminKnowledgeEditorPage() {
         await updateKnowledgePost(id, payload)
       }
       await duplicateKnowledgePost(sourceId, { asTemplate: true })
+      refreshKnowledgeList()
       await Swal.fire({
         icon: 'success',
         title: 'Template saved',
@@ -318,6 +325,7 @@ export default function AdminKnowledgeEditorPage() {
       const payload = buildPayload()
       if (isNew) {
         const res = await createKnowledgePost(payload)
+        refreshKnowledgeList()
         await Swal.fire({
           icon: 'success',
           title: 'Post created',
@@ -328,6 +336,7 @@ export default function AdminKnowledgeEditorPage() {
         navigate(`/admin/knowledge/${res.data.id}`, { replace: true })
       } else {
         await updateKnowledgePost(id, payload)
+        refreshKnowledgeList()
         await Swal.fire({
           icon: 'success',
           title: 'Post saved',

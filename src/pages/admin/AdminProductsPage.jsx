@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { Download, Plus, Upload, Pencil, Trash2, Package } from 'lucide-react'
 import Swal from 'sweetalert2'
+import { downloadProductTemplate } from '@/api/products'
 import {
-  deleteProduct,
-  downloadProductTemplate,
-  fetchAdminProducts,
-  fetchProductMeta,
-  importProductsExcel,
-} from '@/api/products'
+  adminApi,
+  useDeleteProductMutation,
+  useGetProductMetaQuery,
+  useGetProductsQuery,
+  useImportProductsMutation,
+} from '@/features/admin/adminApi'
 import Button from '@/components/ui/Button'
 import ProductEditorModal from '@/components/admin/ProductEditorModal'
 import useDebouncedValue from '@/hooks/useDebouncedValue'
@@ -26,9 +28,7 @@ import {
 import { productInitialValues } from '@/lib/productValidation'
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState([])
-  const [meta, setMeta] = useState(null)
-  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
+  const dispatch = useDispatch()
   const [filters, setFilters] = useState({
     q: '',
     status: 'all',
@@ -41,51 +41,49 @@ export default function AdminProductsPage() {
   })
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebouncedValue(searchInput, 400)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [editorOpen, setEditorOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [editorValues, setEditorValues] = useState(productInitialValues)
-  const [importing, setImporting] = useState(false)
-  const skipDebounceLoad = useRef(true)
+  const [actionError, setActionError] = useState('')
 
-  const load = async (next = filters) => {
-    setLoading(true)
-    setError('')
-    try {
-      const [listRes, metaRes] = await Promise.all([
-        fetchAdminProducts({ ...next, limit: 20 }),
-        fetchProductMeta(),
-      ])
-      setProducts(listRes.data.items)
-      setPagination(listRes.data.pagination)
-      setMeta(metaRes.data)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const queryArgs = useMemo(() => ({ ...filters, limit: 20 }), [filters])
 
-  const applyFilters = (patch = {}) => {
-    const next = { ...filters, ...patch, page: patch.page || 1 }
-    setFilters(next)
-    load(next)
-  }
+  const {
+    data: listData,
+    error: listError,
+    isLoading,
+    isFetching,
+    isSuccess,
+  } = useGetProductsQuery(queryArgs)
+
+  const { data: meta } = useGetProductMetaQuery()
+  const [deleteProduct] = useDeleteProductMutation()
+  const [importProducts, { isLoading: importing }] = useImportProductsMutation()
+
+  const products = listData?.items || []
+  const pagination = listData?.pagination || { page: 1, pages: 1, total: 0 }
+  const error = actionError || listError?.data?.message || listError?.error || ''
 
   useEffect(() => {
     document.title = 'Products | Admin | Imperial Co'
-    load()
   }, [])
 
   useEffect(() => {
-    if (skipDebounceLoad.current) {
-      skipDebounceLoad.current = false
-      return
-    }
-    applyFilters({ q: debouncedSearch })
+    setFilters((prev) =>
+      prev.q === debouncedSearch && prev.page === 1
+        ? prev
+        : { ...prev, q: debouncedSearch, page: 1 },
+    )
   }, [debouncedSearch])
+
+  const applyFilters = (patch = {}) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...patch,
+      page: patch.page || 1,
+    }))
+  }
 
   const filterOptions = useMemo(
     () => ({
@@ -140,7 +138,8 @@ export default function AdminProductsPage() {
     })
     if (!result.isConfirmed) return
     try {
-      await deleteProduct(product.id)
+      setActionError('')
+      await deleteProduct(product.id).unwrap()
       setMessage('Product deleted')
       await Swal.fire({
         icon: 'success',
@@ -149,13 +148,12 @@ export default function AdminProductsPage() {
         timer: 1600,
         showConfirmButton: false,
       })
-      await load(filters)
     } catch (err) {
-      setError(err.message)
+      setActionError(err.message || 'Delete failed')
       await Swal.fire({
         icon: 'error',
         title: 'Delete failed',
-        text: err.message,
+        text: err.message || 'Delete failed',
         confirmButtonColor: '#282a74',
       })
     }
@@ -165,20 +163,17 @@ export default function AdminProductsPage() {
     const file = event.target.files?.[0]
     event.target.value = ''
     if (!file) return
-    setImporting(true)
     setMessage('')
-    setError('')
+    setActionError('')
     try {
-      const result = await importProductsExcel(file)
+      const result = await importProducts(file).unwrap()
       setMessage(
-        `Import complete: ${result.data.created} created, ${result.data.updated} updated` +
-          (result.data.errors?.length ? ` (${result.data.errors.length} warnings)` : ''),
+        `Import complete: ${result.created} created, ${result.updated} updated` +
+          (result.errors?.length ? ` (${result.errors.length} warnings)` : ''),
       )
-      await load({ ...filters, page: 1 })
+      setFilters((prev) => ({ ...prev, page: 1 }))
     } catch (err) {
-      setError(err.message)
-    } finally {
-      setImporting(false)
+      setActionError(err.message || 'Import failed')
     }
   }
 
@@ -192,9 +187,11 @@ export default function AdminProductsPage() {
       anchor.click()
       URL.revokeObjectURL(url)
     } catch (err) {
-      setError(err.message)
+      setActionError(err.message)
     }
   }
+
+  const showLoading = isLoading && !isSuccess && !listData
 
   return (
     <div className="space-y-5">
@@ -234,15 +231,22 @@ export default function AdminProductsPage() {
       ) : null}
 
       <Panel>
-        <SearchField
-          value={searchInput}
-          onChange={setSearchInput}
-          onSubmit={(q) => {
-            setSearchInput(q)
-            applyFilters({ q })
-          }}
-          placeholder="Search item id, name, brand, generic, manufacturer…"
-        />
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex-1">
+            <SearchField
+              value={searchInput}
+              onChange={setSearchInput}
+              onSubmit={(q) => {
+                setSearchInput(q)
+                applyFilters({ q })
+              }}
+              placeholder="Search item id, name, brand, generic, manufacturer…"
+            />
+          </div>
+          {isFetching && listData ? (
+            <span className="shrink-0 text-xs font-semibold text-slate-soft">Refreshing…</span>
+          ) : null}
+        </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <FilterSelect
             label="Status"
@@ -302,7 +306,7 @@ export default function AdminProductsPage() {
         </div>
       </Panel>
 
-      {loading ? (
+      {showLoading ? (
         <Panel>
           <p className="py-10 text-center text-sm text-slate-body">Loading products…</p>
         </Panel>
@@ -409,9 +413,12 @@ export default function AdminProductsPage() {
         editingId={editingId}
         initialValues={editorValues}
         onClose={() => setEditorOpen(false)}
-        onSaved={async () => {
+        onSaved={() => {
           setMessage(editingId ? 'Product updated' : 'Product created')
-          await load({ ...filters, page: 1 })
+          dispatch(
+            adminApi.util.invalidateTags(['Products', 'ProductMeta', 'Dashboard']),
+          )
+          setFilters((prev) => ({ ...prev, page: 1 }))
         }}
       />
     </div>

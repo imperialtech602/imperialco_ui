@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Download, Eye, Package, Paperclip } from 'lucide-react'
+import { downloadOrderAttachment, openOrderAttachment } from '@/api/orders'
 import {
-  downloadOrderAttachment,
-  fetchOrder,
-  openOrderAttachment,
-  updateOrder,
-} from '@/api/orders'
+  useGetOrderQuery,
+  useUpdateOrderMutation,
+} from '@/features/admin/adminApi'
 import Button from '@/components/ui/Button'
 import {
   CountryPill,
@@ -36,42 +35,43 @@ function DetailRow({ label, value }) {
 
 export default function AdminOrderDetailPage() {
   const { id } = useParams()
-  const [order, setOrder] = useState(null)
+  const { data: order, error: queryError, isLoading, isSuccess } = useGetOrderQuery(id)
+  const [updateOrder, { isLoading: saving }] = useUpdateOrderMutation()
   const [status, setStatus] = useState('new')
   const [adminNotes, setAdminNotes] = useState('')
-  const [saving, setSaving] = useState(false)
   const [fileBusy, setFileBusy] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
   useEffect(() => {
     document.title = 'Order Detail | Admin | Imperial Co'
-    fetchOrder(id)
-      .then((res) => {
-        setOrder(res.data)
-        setStatus(res.data.status)
-        setAdminNotes(res.data.adminNotes || '')
-      })
-      .catch((err) => setError(err.message))
-  }, [id])
+  }, [])
+
+  useEffect(() => {
+    if (!order) return
+    setStatus(order.status)
+    setAdminNotes(order.adminNotes || '')
+  }, [order])
 
   const onSave = async () => {
-    setSaving(true)
     setMessage('')
     setError('')
     try {
-      const res = await updateOrder(id, { status, adminNotes })
-      setOrder(res.data)
+      await updateOrder({ id, status, adminNotes }).unwrap()
       setMessage('Order updated')
     } catch (err) {
-      setError(err.message)
-    } finally {
-      setSaving(false)
+      setError(err.data?.message || err.message || 'Save failed')
     }
   }
 
-  if (error && !order) {
-    return <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+  const loadError = error || queryError?.data?.message || queryError?.error || ''
+
+  if (loadError && !order) {
+    return <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{loadError}</p>
+  }
+
+  if (isLoading && !isSuccess && !order) {
+    return <p className="text-sm text-slate-body">Loading order…</p>
   }
 
   if (!order) {

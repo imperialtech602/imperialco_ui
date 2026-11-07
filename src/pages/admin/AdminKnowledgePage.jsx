@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { Plus, Pencil, Trash2, BookOpen, ExternalLink, LayoutTemplate } from 'lucide-react'
 import {
-  createKnowledgePost,
-  deleteKnowledgePost,
-  duplicateKnowledgePost,
-  fetchAdminPosts,
-} from '@/api/knowledge'
+  useCreateKnowledgePostMutation,
+  useDeleteKnowledgePostMutation,
+  useDuplicateKnowledgePostMutation,
+  useGetKnowledgePostsQuery,
+} from '@/features/admin/adminApi'
 import { STARTER_TEMPLATES } from '@/data/knowledgeTemplates'
 import Button from '@/components/ui/Button'
 import {
@@ -40,28 +40,19 @@ function CtaBasePills({ bases = [] }) {
 
 export default function AdminKnowledgePage() {
   const navigate = useNavigate()
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { data, error, isLoading, isFetching, isSuccess } = useGetKnowledgePostsQuery({
+    limit: 50,
+  })
+  const [createPost] = useCreateKnowledgePostMutation()
+  const [duplicatePost] = useDuplicateKnowledgePostMutation()
+  const [deletePost] = useDeleteKnowledgePostMutation()
+
+  const posts = data?.items || []
   const [chooserOpen, setChooserOpen] = useState(false)
   const [starting, setStarting] = useState('')
 
-  const load = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetchAdminPosts({ limit: 50 })
-      setPosts(res.data?.items || [])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
     document.title = 'Knowledge Hub | Admin | Imperial Co'
-    load()
   }, [])
 
   const templates = posts.filter((post) => post.isTemplate)
@@ -75,17 +66,17 @@ export default function AdminKnowledgePage() {
   const startFromStarter = async (starter) => {
     setStarting(starter.key)
     try {
-      const res = await createKnowledgePost({
+      const created = await createPost({
         title: 'New post',
         status: 'draft',
         blocks: starter.blocks,
-      })
-      openEditor(res.data.id)
+      }).unwrap()
+      openEditor(created.id)
     } catch (err) {
       await Swal.fire({
         icon: 'error',
         title: 'Could not start post',
-        text: err.message,
+        text: err.data?.message || err.message || 'Failed',
         confirmButtonColor: '#282a74',
       })
     } finally {
@@ -96,13 +87,13 @@ export default function AdminKnowledgePage() {
   const startFromSaved = async (template) => {
     setStarting(template.id)
     try {
-      const res = await duplicateKnowledgePost(template.id)
-      openEditor(res.data.id)
+      const created = await duplicatePost({ id: template.id }).unwrap()
+      openEditor(created.id)
     } catch (err) {
       await Swal.fire({
         icon: 'error',
         title: 'Could not start post',
-        text: err.message,
+        text: err.data?.message || err.message || 'Failed',
         confirmButtonColor: '#282a74',
       })
     } finally {
@@ -121,17 +112,19 @@ export default function AdminKnowledgePage() {
     })
     if (!result.isConfirmed) return
     try {
-      await deleteKnowledgePost(post.id)
-      await load()
+      await deletePost(post.id).unwrap()
     } catch (err) {
       await Swal.fire({
         icon: 'error',
         title: 'Delete failed',
-        text: err.message,
+        text: err.data?.message || err.message || 'Delete failed',
         confirmButtonColor: '#282a74',
       })
     }
   }
+
+  const showLoading = isLoading && !isSuccess && !data
+  const errorMessage = error?.data?.message || error?.error || ''
 
   return (
     <div className="space-y-5">
@@ -140,18 +133,23 @@ export default function AdminKnowledgePage() {
         title="Knowledge Hub"
         description="Start a post from a boxed CTA layout, a banner CTA layout, or a template you saved."
         actions={
-          <Button size="sm" onClick={() => setChooserOpen(true)}>
-            <Plus className="h-4 w-4" />
-            New post
-          </Button>
+          <div className="flex items-center gap-3">
+            {isFetching && data ? (
+              <span className="text-xs font-semibold text-slate-soft">Refreshing…</span>
+            ) : null}
+            <Button size="sm" onClick={() => setChooserOpen(true)}>
+              <Plus className="h-4 w-4" />
+              New post
+            </Button>
+          </div>
         }
       />
 
-      {error ? (
-        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      {errorMessage ? (
+        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{errorMessage}</p>
       ) : null}
 
-      {loading ? (
+      {showLoading ? (
         <Panel>
           <p className="py-10 text-center text-sm text-slate-body">Loading posts…</p>
         </Panel>

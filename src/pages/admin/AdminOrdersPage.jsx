@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ClipboardList } from 'lucide-react'
-import { fetchOrders } from '@/api/orders'
+import { useGetOrdersQuery } from '@/features/admin/adminApi'
 import useDebouncedValue from '@/hooks/useDebouncedValue'
 import {
   EmptyState,
@@ -17,8 +17,6 @@ const STATUS_OPTIONS = ['all', 'new', 'reviewing', 'quoted', 'closed', 'cancelle
 
 export default function AdminOrdersPage() {
   const [searchParams] = useSearchParams()
-  const [orders, setOrders] = useState([])
-  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 })
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebouncedValue(searchInput, 400)
   const [filters, setFilters] = useState({
@@ -26,43 +24,28 @@ export default function AdminOrdersPage() {
     status: searchParams.get('status') || 'all',
     page: 1,
   })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const skipDebounceLoad = useRef(true)
 
-  const load = async (next = filters) => {
-    setLoading(true)
-    setError('')
-    try {
-      const result = await fetchOrders({
-        q: next.q,
-        status: next.status,
-        page: next.page,
-        limit: 20,
-      })
-      setOrders(result.data.items)
-      setPagination(result.data.pagination)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const queryArgs = useMemo(() => ({ ...filters, limit: 20 }), [filters])
+
+  const { data, error, isLoading, isFetching, isSuccess } = useGetOrdersQuery(queryArgs)
+
+  const orders = data?.items || []
+  const pagination = data?.pagination || { page: 1, pages: 1, total: 0 }
+  const errorMessage = error?.data?.message || error?.error || ''
 
   useEffect(() => {
     document.title = 'Orders | Admin | Imperial Co'
-    load(filters)
   }, [])
 
   useEffect(() => {
-    if (skipDebounceLoad.current) {
-      skipDebounceLoad.current = false
-      return
-    }
-    const next = { ...filters, q: debouncedSearch, page: 1 }
-    setFilters(next)
-    load(next)
+    setFilters((prev) =>
+      prev.q === debouncedSearch && prev.page === 1
+        ? prev
+        : { ...prev, q: debouncedSearch, page: 1 },
+    )
   }, [debouncedSearch])
+
+  const showLoading = isLoading && !isSuccess && !data
 
   return (
     <div className="space-y-5">
@@ -73,15 +56,13 @@ export default function AdminOrdersPage() {
       />
 
       <Panel>
-        <div className="grid gap-3 lg:grid-cols-[1.4fr_220px]">
+        <div className="grid gap-3 lg:grid-cols-[1.4fr_220px_auto]">
           <SearchField
             value={searchInput}
             onChange={setSearchInput}
             onSubmit={(q) => {
               setSearchInput(q)
-              const next = { ...filters, q, page: 1 }
-              setFilters(next)
-              load(next)
+              setFilters((prev) => ({ ...prev, q, page: 1 }))
             }}
             placeholder="Search order #, company, email, product…"
           />
@@ -89,20 +70,21 @@ export default function AdminOrdersPage() {
             label="Status"
             value={filters.status}
             options={STATUS_OPTIONS}
-            onChange={(status) => {
-              const next = { ...filters, status, page: 1 }
-              setFilters(next)
-              load(next)
-            }}
+            onChange={(status) => setFilters((prev) => ({ ...prev, status, page: 1 }))}
           />
+          {isFetching && data ? (
+            <span className="self-end pb-2 text-xs font-semibold text-slate-soft">
+              Refreshing…
+            </span>
+          ) : null}
         </div>
       </Panel>
 
-      {error ? (
-        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      {errorMessage ? (
+        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{errorMessage}</p>
       ) : null}
 
-      {loading ? (
+      {showLoading ? (
         <Panel>
           <p className="py-10 text-center text-sm text-slate-body">Loading orders…</p>
         </Panel>
@@ -160,11 +142,7 @@ export default function AdminOrdersPage() {
         pages={pagination.pages}
         total={pagination.total}
         label={pagination.total === 1 ? 'order' : 'orders'}
-        onChange={(page) => {
-          const next = { ...filters, page }
-          setFilters(next)
-          load(next)
-        }}
+        onChange={(page) => setFilters((prev) => ({ ...prev, page }))}
       />
     </div>
   )

@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
 import { Plus, Pencil, Trash2, Users } from 'lucide-react'
-import { createUser, deleteUser, fetchUsers, updateUser } from '@/api/users'
+import {
+  useCreateUserMutation,
+  useDeleteUserMutation,
+  useGetUsersQuery,
+  useUpdateUserMutation,
+} from '@/features/admin/adminApi'
 import Button from '@/components/ui/Button'
 import {
   EmptyState,
@@ -26,30 +31,19 @@ const EMPTY = {
 }
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { data, error, isLoading, isFetching, isSuccess } = useGetUsersQuery()
+  const [createUser] = useCreateUserMutation()
+  const [updateUser] = useUpdateUserMutation()
+  const [deleteUser] = useDeleteUserMutation()
+
+  const users = data || []
   const [editorOpen, setEditorOpen] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
 
-  const load = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      const res = await fetchUsers()
-      setUsers(res.data || [])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
     document.title = 'Users | Admin | Imperial Co'
-    load()
   }, [])
 
   const openCreate = () => {
@@ -106,9 +100,9 @@ export default function AdminUsersPage() {
       if (!editingId) {
         if (!form.password) throw new Error('Password is required for new users')
         payload.password = form.password
-        await createUser(payload)
+        await createUser(payload).unwrap()
       } else {
-        await updateUser(editingId, payload)
+        await updateUser({ id: editingId, ...payload }).unwrap()
       }
       setEditorOpen(false)
       await Swal.fire({
@@ -118,12 +112,11 @@ export default function AdminUsersPage() {
         timer: 1400,
         showConfirmButton: false,
       })
-      await load()
     } catch (err) {
       await Swal.fire({
         icon: 'error',
         title: 'Save failed',
-        text: err.message,
+        text: err.data?.message || err.message || 'Save failed',
         confirmButtonColor: '#282a74',
       })
     } finally {
@@ -142,17 +135,19 @@ export default function AdminUsersPage() {
     })
     if (!result.isConfirmed) return
     try {
-      await deleteUser(user.id)
-      await load()
+      await deleteUser(user.id).unwrap()
     } catch (err) {
       await Swal.fire({
         icon: 'error',
         title: 'Delete failed',
-        text: err.message,
+        text: err.data?.message || err.message || 'Delete failed',
         confirmButtonColor: '#282a74',
       })
     }
   }
+
+  const showLoading = isLoading && !isSuccess && !data
+  const errorMessage = error?.data?.message || error?.error || ''
 
   return (
     <div className="space-y-5">
@@ -161,18 +156,23 @@ export default function AdminUsersPage() {
         title="Users"
         description="Create team members and grant Products, Orders, or Knowledge Hub access."
         actions={
-          <Button size="sm" onClick={openCreate}>
-            <Plus className="h-4 w-4" />
-            Add user
-          </Button>
+          <div className="flex items-center gap-3">
+            {isFetching && data ? (
+              <span className="text-xs font-semibold text-slate-soft">Refreshing…</span>
+            ) : null}
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="h-4 w-4" />
+              Add user
+            </Button>
+          </div>
         }
       />
 
-      {error ? (
-        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      {errorMessage ? (
+        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{errorMessage}</p>
       ) : null}
 
-      {loading ? (
+      {showLoading ? (
         <Panel>
           <p className="py-10 text-center text-sm text-slate-body">Loading users…</p>
         </Panel>
