@@ -9,21 +9,52 @@ import {
   ExternalLink,
   Menu,
   X,
+  BookOpen,
+  Users,
 } from 'lucide-react'
 import logo from '@/assets/imperial-logo.png'
 import { logoutAdmin } from '@/api/auth'
 import { authCleared } from '@/features/admin/authSlice'
+import { hasPermission, isSuperAdmin } from '@/lib/permissions'
 
-const LINKS = [
+const ALL_LINKS = [
   { to: '/admin', end: true, label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/orders', label: 'Orders', icon: ClipboardList },
-  { to: '/admin/products', label: 'Products', icon: Package },
+  {
+    to: '/admin/orders',
+    label: 'Orders',
+    icon: ClipboardList,
+    permission: 'orders',
+  },
+  {
+    to: '/admin/products',
+    label: 'Products',
+    icon: Package,
+    permission: 'products',
+  },
+  {
+    to: '/admin/knowledge',
+    label: 'Knowledge Hub',
+    icon: BookOpen,
+    permission: 'knowledgeHub',
+  },
+  {
+    to: '/admin/users',
+    label: 'Users',
+    icon: Users,
+    superAdminOnly: true,
+  },
 ]
 
-function SidebarNav({ onNavigate }) {
+function SidebarNav({ onNavigate, admin }) {
+  const links = ALL_LINKS.filter((link) => {
+    if (link.superAdminOnly) return isSuperAdmin(admin)
+    if (link.permission) return hasPermission(admin, link.permission)
+    return true
+  })
+
   return (
     <nav className="space-y-1.5">
-      {LINKS.map((link) => (
+      {links.map((link) => (
         <NavLink
           key={link.to}
           to={link.to}
@@ -164,7 +195,7 @@ export default function AdminShell() {
         <div className="relative z-10 flex h-full flex-col px-5 py-7">
           <SidebarBrand />
           <div className="mt-10 flex-1">
-            <SidebarNav />
+            <SidebarNav admin={admin} />
           </div>
           <SidebarFooter admin={admin} onLogout={onLogout} />
         </div>
@@ -210,7 +241,7 @@ export default function AdminShell() {
               </button>
             </div>
             <div className="mt-8 flex-1 overflow-y-auto">
-              <SidebarNav onNavigate={closeMobile} />
+              <SidebarNav admin={admin} onNavigate={closeMobile} />
             </div>
             <SidebarFooter admin={admin} onLogout={onLogout} onNavigate={closeMobile} />
           </div>

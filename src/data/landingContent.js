@@ -3,7 +3,7 @@ export const NAV_LINKS = [
   { label: 'Sourcing', to: '/sourcing' },
   { label: 'Quality & Compliance', to: '/quality-compliance' },
   { label: 'Logistics & Handling', to: '/logistics-handling' },
-  { label: 'Knowledge Hub', to: '/faq' },
+  { label: 'Knowledge Hub', to: '/insights' },
   { label: 'About', to: '/about' },
 ]
 

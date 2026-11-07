@@ -12,15 +12,21 @@ import LogisticsCompliancePage from '@/pages/LogisticsCompliancePage'
 import CatalogPage from '@/pages/CatalogPage'
 import RequestQuotePage from '@/pages/RequestQuotePage'
 import FaqPage from '@/pages/FaqPage'
+import InsightsPage from '@/pages/InsightsPage'
+import InsightPostPage from '@/pages/InsightPostPage'
 import PrivacyPage from '@/pages/PrivacyPage'
 import ScrollToHash from '@/components/routing/ScrollToHash'
 import AdminGuard from '@/components/admin/AdminGuard'
 import AdminShell from '@/components/admin/AdminShell'
+import PermissionGate from '@/components/admin/PermissionGate'
 import AdminLoginPage from '@/pages/admin/AdminLoginPage'
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 import AdminOrdersPage from '@/pages/admin/AdminOrdersPage'
 import AdminOrderDetailPage from '@/pages/admin/AdminOrderDetailPage'
 import AdminProductsPage from '@/pages/admin/AdminProductsPage'
+import AdminUsersPage from '@/pages/admin/AdminUsersPage'
+import AdminKnowledgePage from '@/pages/admin/AdminKnowledgePage'
+import AdminKnowledgeEditorPage from '@/pages/admin/AdminKnowledgeEditorPage'
 
 function PublicLayout() {
   return (
@@ -53,9 +59,54 @@ function AppFrame() {
           }
         >
           <Route index element={<AdminDashboardPage />} />
-          <Route path="orders" element={<AdminOrdersPage />} />
-          <Route path="orders/:id" element={<AdminOrderDetailPage />} />
-          <Route path="products" element={<AdminProductsPage />} />
+          <Route
+            path="orders"
+            element={
+              <PermissionGate permission="orders">
+                <AdminOrdersPage />
+              </PermissionGate>
+            }
+          />
+          <Route
+            path="orders/:id"
+            element={
+              <PermissionGate permission="orders">
+                <AdminOrderDetailPage />
+              </PermissionGate>
+            }
+          />
+          <Route
+            path="products"
+            element={
+              <PermissionGate permission="products">
+                <AdminProductsPage />
+              </PermissionGate>
+            }
+          />
+          <Route
+            path="knowledge"
+            element={
+              <PermissionGate permission="knowledgeHub">
+                <AdminKnowledgePage />
+              </PermissionGate>
+            }
+          />
+          <Route
+            path="knowledge/:id"
+            element={
+              <PermissionGate permission="knowledgeHub">
+                <AdminKnowledgeEditorPage />
+              </PermissionGate>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <PermissionGate superAdminOnly>
+                <AdminUsersPage />
+              </PermissionGate>
+            }
+          />
         </Route>
 
         <Route element={<PublicLayout />}>
@@ -68,6 +119,8 @@ function AppFrame() {
           <Route path="/logistics-compliance" element={<LogisticsCompliancePage />} />
           <Route path="/products" element={<CatalogPage />} />
           <Route path="/request-quote" element={<RequestQuotePage />} />
+          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/insights/:slug" element={<InsightPostPage />} />
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
         </Route>

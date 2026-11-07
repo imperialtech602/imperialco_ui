@@ -48,6 +48,22 @@ export const STATUS_STYLES = {
     wrap: 'bg-[#eef2ff] text-[#3730a3] ring-1 ring-[#6366f1]/25',
     dot: 'bg-[#4f46e5]',
   },
+  draft: {
+    wrap: 'bg-[#ececf3] text-[#5b5e7a] ring-1 ring-[#7a7d96]/25',
+    dot: 'bg-[#7a7d96]',
+  },
+  published: {
+    wrap: 'bg-[#dcfce7] text-[#15803d] ring-1 ring-[#16a34a]/25',
+    dot: 'bg-[#16a34a]',
+  },
+  superadmin: {
+    wrap: 'bg-[#e8e9ff] text-[#282a74] ring-1 ring-[#282a74]/20',
+    dot: 'bg-[#282a74]',
+  },
+  admin: {
+    wrap: 'bg-[#eef2ff] text-[#3730a3] ring-1 ring-[#6366f1]/25',
+    dot: 'bg-[#4f46e5]',
+  },
 }
 
 const STATUS_LABELS = {
@@ -61,6 +77,10 @@ const STATUS_LABELS = {
   discontinued: 'Discontinued',
   file: 'File attached',
   inventory: 'Inventory',
+  draft: 'Draft',
+  published: 'Published',
+  superadmin: 'Super admin',
+  admin: 'Admin',
 }
 
 export function StatusPill({ value, size = 'md' }) {

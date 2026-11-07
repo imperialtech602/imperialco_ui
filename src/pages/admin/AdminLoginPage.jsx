@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import logo from '@/assets/imperial-logo.png'
 import { loginAdmin } from '@/api/auth'
 import {
@@ -17,6 +18,7 @@ export default function AdminLoginPage() {
   const location = useLocation()
   const { token, status, error } = useSelector((state) => state.adminAuth)
   const [form, setForm] = useState({ email: '', password: '' })
+  const [showPassword, setShowPassword] = useState(false)
 
   if (token) {
     return <Navigate to={location.state?.from?.pathname || '/admin'} replace />
@@ -87,14 +89,28 @@ export default function AdminLoginPage() {
 
             <label className="mt-4 block">
               <span className={labelClass}>Password</span>
-              <input
-                required
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={onChange}
-                className={fieldClass}
-              />
+              <div className="relative">
+                <input
+                  required
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={form.password}
+                  onChange={onChange}
+                  className={`${fieldClass} pr-11`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-soft transition hover:bg-brand-muted hover:text-brand"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
             </label>
 
             {error ? (
