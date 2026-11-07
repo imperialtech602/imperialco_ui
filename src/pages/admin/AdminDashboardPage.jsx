@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Package,
@@ -9,7 +9,7 @@ import {
   Plus,
   Upload,
 } from 'lucide-react'
-import { fetchDashboardStats } from '@/api/orders'
+import { useGetDashboardStatsQuery } from '@/features/admin/adminApi'
 import Button from '@/components/ui/Button'
 import {
   EmptyState,
@@ -19,19 +19,30 @@ import {
 } from '@/components/admin/adminUi'
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState(null)
-  const [error, setError] = useState('')
+  const { data: stats, error, isLoading, isFetching, isSuccess } =
+    useGetDashboardStatsQuery(undefined, {
+      // Prefer cache; background refresh only when stale (see adminApi config)
+      refetchOnMountOrArgChange: false,
+    })
 
   useEffect(() => {
     document.title = 'Admin Dashboard | Imperial Co'
-    fetchDashboardStats()
-      .then((res) => setStats(res.data))
-      .catch((err) => setError(err.message))
   }, [])
 
-  if (error) {
+  if (error && !stats) {
     return (
-      <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+        {error?.data?.message || error?.error || 'Unable to load dashboard'}
+      </p>
+    )
+  }
+
+  // Show full-screen loader only on the very first load (no cached data)
+  if (isLoading && !isSuccess && !stats) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-body">
+        Loading dashboard…
+      </div>
     )
   }
 
@@ -82,6 +93,9 @@ export default function AdminDashboardPage() {
         description="Track RFQ orders and keep the comparator catalog ready for sourcing."
         actions={
           <>
+            {isFetching ? (
+              <span className="text-xs font-semibold text-slate-soft">Refreshing…</span>
+            ) : null}
             <Link to="/admin/products">
               <Button size="sm">
                 <Plus className="h-4 w-4" />

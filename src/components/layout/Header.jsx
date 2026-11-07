@@ -42,11 +42,17 @@ export default function Header() {
   const { pathname } = useLocation()
   const mobileNavOpen = useSelector((state) => state.ui.mobileNavOpen)
   const rfqCount = useSelector(selectRfqCount)
+  const adminToken = useSelector((state) => state.adminAuth.token)
   const [scrolled, setScrolled] = useState(false)
 
   const goToQuote = () => {
     dispatch(closeMobileNav())
     navigate('/request-quote')
+  }
+
+  const goToAdmin = () => {
+    dispatch(closeMobileNav())
+    navigate(adminToken ? '/admin' : '/admin/login')
   }
 
   useEffect(() => {
@@ -135,6 +141,14 @@ export default function Header() {
           <div className="relative z-20 flex shrink-0 items-center gap-1.5">
             <button
               type="button"
+              onClick={goToAdmin}
+              className="hidden h-8 items-center justify-center rounded-full border border-brand/15 bg-white/70 px-3 text-[10px] font-semibold text-brand transition hover:bg-brand hover:text-white sm:inline-flex sm:h-9 sm:px-3.5 sm:text-[11px] lg:h-9 lg:text-xs xl:h-10 xl:px-4 xl:text-sm"
+            >
+              {adminToken ? 'Admin' : 'Login'}
+            </button>
+
+            <button
+              type="button"
               onClick={goToQuote}
               className="relative inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-brand px-2.5 text-[10px] font-semibold text-white shadow-md shadow-brand/20 transition hover:bg-brand-dark sm:h-9 sm:px-3 sm:text-[11px] lg:h-9 lg:px-3.5 lg:text-xs xl:h-10 xl:px-4 xl:text-sm"
             >
@@ -183,7 +197,15 @@ export default function Header() {
                     {link.label}
                   </Link>
                 ))}
-                <Button className="relative mt-2 w-full" size="lg" onClick={goToQuote}>
+                <Button
+                  className="mt-2 w-full"
+                  size="lg"
+                  variant="secondary"
+                  onClick={goToAdmin}
+                >
+                  {adminToken ? 'Open admin' : 'Login'}
+                </Button>
+                <Button className="relative w-full" size="lg" onClick={goToQuote}>
                   Request a Quote
                   {rfqCount > 0 ? (
                     <span className="ml-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-gold px-2 text-xs font-extrabold text-brand">
