@@ -1,4 +1,4 @@
-import { apiRequest } from './client'
+import { API_BASE, apiRequest } from './client'
 
 export function submitOrder(payload, file) {
   if (file) {
@@ -47,7 +47,7 @@ export function fetchDashboardStats() {
 
 export async function downloadOrderAttachment(id, filename = 'attachment') {
   const token = localStorage.getItem('imperial_admin_token')
-  const response = await fetch(`/api/orders/${id}/attachment`, {
+  const response = await fetch(`${API_BASE}/orders/${id}/attachment`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
 
@@ -75,7 +75,7 @@ export async function downloadOrderAttachment(id, filename = 'attachment') {
 
 export async function openOrderAttachment(id) {
   const token = localStorage.getItem('imperial_admin_token')
-  const response = await fetch(`/api/orders/${id}/attachment`, {
+  const response = await fetch(`${API_BASE}/orders/${id}/attachment`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
 
