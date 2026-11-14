@@ -6,12 +6,13 @@ export const LH_HERO = {
 export const DUBAI_OPS = [
   {
     title: 'International air connectivity',
+    icon:'airplane-pin'
    
   },
   {
     title: 'Healthcare-oriented logistics ecosystem',
   
-    icon: 'building',
+    icon: 'hospital',
   },
   {
     title: 'Labeled storage alignment',

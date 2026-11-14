@@ -42,6 +42,10 @@ import labTubeIcon from '@/assets/icons/lab-tube.svg'
 import hospitalIcon from '@/assets/icons/hospital.svg'
 import medicineSearchIcon from '@/assets/icons/medicine-search.svg'
 import graphLinesIcon from '@/assets/icons/graph-lines.svg'
+import thermometerAsset from '@/assets/icons/thermometer.svg'
+import warehouseIcon from '@/assets/icons/warehouse.svg'
+import fileHorizontalIcon from '@/assets/icons/file-horizontal.svg'
+import airplanePinIcon from '@/assets/icons/airplane-pin.svg'
 
 const assetMap = {
   'shield-check': shieldCheck,
@@ -59,6 +63,10 @@ const assetMap = {
   hospital: hospitalIcon,
   'medicine-search': medicineSearchIcon,
   'graph-lines': graphLinesIcon,
+  thermometer: thermometerAsset,
+  warehouse: warehouseIcon,
+  'file-horizontal': fileHorizontalIcon,
+  'airplane-pin': airplanePinIcon,
 }
 
 const lucideMap = {

@@ -36,7 +36,7 @@ export const ABOUT_MILESTONES = [
   {
     value: '100%',
     label: 'SRA-origin verified',
-    icon: 'badge-check',
+    icon: 'shield-check',
   },
 ]
 
@@ -57,7 +57,7 @@ export const ABOUT_VALUES = [
     title: 'Complete Transparency',
     description:
       'Full documentation, batch details, and chain of custody records with every shipment. No surprises, no hidden information.',
-    icon: 'file',
+    icon: 'file-text',
   },
   {
     title: 'Quality Control',
@@ -75,7 +75,7 @@ export const ABOUT_VALUES = [
     title: 'Global Reach',
     description:
       'Strategic Dubai Free Zone operations with sourcing capabilities across all major SRA markets—FDA, EMA, MHRA, and more.',
-    icon: 'globe',
+    icon: 'globe-network',
   },
 ]
 

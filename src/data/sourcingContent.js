@@ -25,7 +25,7 @@ export const MARKET_COVERAGE = [
 export const SCOPE_CARDS = [
   {
     title: 'What We Source',
-    icon: 'search',
+    icon: 'medicine-search',
     items: [
       'FDA-designated Reference Listed Drugs (RLDs)',
       'Comparator products for BE and analytical studies',
@@ -35,7 +35,7 @@ export const SCOPE_CARDS = [
   },
   {
     title: 'Development-Aware Sourcing Approach',
-    icon: 'network',
+    icon: 'globe-network',
     items: [
       'Target submission market',
       'Reference product designation',

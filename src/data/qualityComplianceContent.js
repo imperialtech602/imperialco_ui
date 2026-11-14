@@ -8,12 +8,12 @@ export const QC_TRACEABILITY = [
   {
     title: 'Origin market disclosure',
     
-    icon: 'globe',
+    icon: 'globe-network',
   },
   {
     title: 'Structured supply documentation',
    
-    icon: 'file',
+    icon: 'file-text',
   },
   {
     title: 'Same-batch support where feasible',
@@ -25,7 +25,7 @@ export const QC_TRACEABILITY = [
 export const QC_DETAIL_CARDS = [
   {
     title: 'Storage & Handling Integrity',
-    icon: 'thermometer',
+    icon: 'warehouse',
     items: [
       'Controlled ambient handling',
       'Cold-chain handling where required',
@@ -35,7 +35,7 @@ export const QC_DETAIL_CARDS = [
   },
   {
     title: 'Documentation Transparency',
-    icon: 'file',
+    icon: 'file-horizontal',
     items: [
       'Commercial invoice',
       'Packing list',
@@ -46,7 +46,7 @@ export const QC_DETAIL_CARDS = [
   },
   {
     title: 'Temperature Monitoring & Excursions',
-    icon: 'alert',
+    icon: 'thermometer',
     items: [
       'Monitoring methods',
       'Excursion identification',
