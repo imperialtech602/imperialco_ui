@@ -36,6 +36,12 @@ import globeAltIcon from '@/assets/icons/globe-alt.svg'
 import creditCardIcon from '@/assets/icons/credit-card.svg'
 import clockCircleIcon from '@/assets/icons/clock-circle.svg'
 import alertOctagonIcon from '@/assets/icons/alert-octagon.svg'
+import usersIcon from '@/assets/icons/users.svg'
+import truckIcon from '@/assets/icons/truck.svg'
+import labTubeIcon from '@/assets/icons/lab-tube.svg'
+import hospitalIcon from '@/assets/icons/hospital.svg'
+import medicineSearchIcon from '@/assets/icons/medicine-search.svg'
+import graphLinesIcon from '@/assets/icons/graph-lines.svg'
 
 const assetMap = {
   'shield-check': shieldCheck,
@@ -47,6 +53,12 @@ const assetMap = {
   'credit-card': creditCardIcon,
   'clock-circle': clockCircleIcon,
   'alert-octagon': alertOctagonIcon,
+  users: usersIcon,
+  truck: truckIcon,
+  'lab-tube': labTubeIcon,
+  hospital: hospitalIcon,
+  'medicine-search': medicineSearchIcon,
+  'graph-lines': graphLinesIcon,
 }
 
 const lucideMap = {

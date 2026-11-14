@@ -119,7 +119,7 @@ export const TRUST_STATS = [
   {
     value: '7/10',
     label: 'of top leaders trust us',
-    icon: 'activity',
+    icon: 'graph-lines',
   },
   {
     value: '32',
@@ -133,19 +133,19 @@ export const SERVICE_CARDS = [
     title: 'Bioequivalence ANDA Studies',
     description:
       'SRA-origin RLDs required for regulatory submissions and BE testing.',
-    icon: 'search',
+    icon: 'medicine-search',
   },
   {
     title: 'Clinical Trial Comparator Supply',
     description:
       'Reliable comparator drugs for trial programs with complete documentation.',
-    icon: 'pill',
+    icon: 'hospital',
   },
   {
     title: 'Analytical Reference Products',
     description:
       'Reference standards for analytical and bioanalytical laboratory testing.',
-    icon: 'flask',
+    icon: 'lab-tube',
   },
 ]
 
