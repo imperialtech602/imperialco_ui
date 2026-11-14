@@ -25,10 +25,7 @@ export default function FounderStats() {
               key={stat.value}
               className="rounded-[28px] bg-brand px-5 py-6 text-white sm:rounded-[32px] sm:px-5 sm:py-7"
             >
-              <FeatureIcon
-                name={stat.icon}
-                className="h-10 w-10 opacity-35 brightness-0 invert"
-              />
+             
               <p className="mt-8 text-[1.35rem] font-extrabold tracking-tight sm:text-[1.5rem]">
                 {stat.value}
               </p>

@@ -7,17 +7,17 @@ export const QC_HERO = {
 export const QC_TRACEABILITY = [
   {
     title: 'Origin market disclosure',
-    description: 'Clear visibility of SRA-origin market at quotation and shipment.',
+    
     icon: 'globe',
   },
   {
     title: 'Structured supply documentation',
-    description: 'Commercial and handling records packaged for QA review.',
+   
     icon: 'file',
   },
   {
     title: 'Same-batch support where feasible',
-    description: 'Batch alignment support for study-critical comparator needs.',
+    
     icon: 'layers',
   },
 ]
@@ -28,7 +28,7 @@ export const QC_DETAIL_CARDS = [
     icon: 'thermometer',
     items: [
       'Controlled ambient handling',
-      'Cold chain handling where required',
+      'Cold-chain handling where required',
       'Alignment with labeled storage requirements',
       'Dispatch documentation',
     ],

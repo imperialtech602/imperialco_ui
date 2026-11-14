@@ -1,7 +1,7 @@
 import SectionHeading from '@/components/ui/SectionHeading'
 
 export default function RoleClarityBlock({
-  text = 'Imperial Co operates as a sourcing and supply partner. We do not provide regulatory consulting or substitute for your regulatory counsel — we focus on authentic product access, documentation, and controlled logistics.',
+  text = 'Imperial Co operates as a sourcing and logistics partner. We do not provide regulatory consulting, filing advice, or guarantees of regulatory acceptance. All products are supplied for regulated development and study use in accordance with client-defined requirements.',
 }) {
   return (
     <section className="container-page pb-14 sm:pb-20">

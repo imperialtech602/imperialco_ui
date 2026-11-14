@@ -10,9 +10,7 @@ export default function Quality() {
             Strict quality, traceability, and temperature-control standards.
           </h2>
           <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-body sm:text-[15px]">
-            Every shipment is handled with study-critical care — from verified
-            origin and lot documentation to controlled storage and monitored
-            transport conditions.
+          Handling aligned with labeled storage. Traceability from source to delivery. Batch and expiry visibility with every shipment.
           </p>
         </div>
 

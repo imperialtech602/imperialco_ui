@@ -6,17 +6,16 @@ export const LH_HERO = {
 export const DUBAI_OPS = [
   {
     title: 'International air connectivity',
-    description: 'Strategic hub access for time-sensitive pharmaceutical shipments.',
-    icon: 'plane',
+   
   },
   {
     title: 'Healthcare-oriented logistics ecosystem',
-    description: 'Partners experienced with regulated product handling requirements.',
+  
     icon: 'building',
   },
   {
     title: 'Labeled storage alignment',
-    description: 'Handling aligned with labeled storage and temperature conditions.',
+
     icon: 'thermometer',
   },
 ]
@@ -32,7 +31,7 @@ export const STORAGE_RIGHT = [
   'Refrigerated / cold chain (2–8°C)',
   'Segregated temperature zones',
   'Documented goods receipt and dispatch',
-  'GDP-aligned warehousing practices',
+  
 ]
 
 export const SHIPPING_CARDS = [
@@ -53,7 +52,7 @@ export const SHIPPING_CARDS = [
       'Shipment term alignment',
       'Export documentation coordination',
       'Structured carrier handover',
-      'Route planning for study-critical timelines',
+    
     ],
   },
 ]

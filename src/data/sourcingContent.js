@@ -28,30 +28,30 @@ export const SCOPE_CARDS = [
     icon: 'search',
     items: [
       'FDA-designated Reference Listed Drugs (RLDs)',
-      'Comparator products for BE / clinical programs',
-      'Representative commercial batches',
-      'Hard-to-source strengths and pack sizes',
+      'Comparator products for BE and analytical studies',
+      'Representative commercial batches (where available)',
+      'Hard-to-source and limited-availability products',
     ],
   },
   {
     title: 'Development-Aware Sourcing Approach',
     icon: 'network',
     items: [
-      'Target submission market alignment',
-      'Reference product designation awareness',
-      'Batch suitability and shelf-life considerations',
-      'Storage condition and handling requirements',
+      'Target submission market',
+      'Reference product designation',
+      'Batch suitability and expiry window',
+      'Storage condition requirements',
     ],
   },
 ]
 
 export const ROLE_CLARITY =
-  'Imperial Co operates as a sourcing and supply partner. We do not provide regulatory consulting or substitute for your regulatory counsel — we focus on authentic product access, documentation, and controlled logistics.'
+  'Imperial Co operates as a sourcing and logistics partner. We do not provide regulatory consulting, filing advice, or guarantees of regulatory acceptance. All products are supplied for regulated development and study use in accordance with client-defined requirements.'
 
 export const SOURCING_CTA = {
   title: 'Next steps.',
   subtitle:
-    'Search our catalog or submit a custom sourcing request for your specific RLD or comparator requirements.',
+    'Search our database or submit a custom sourcing request for your specific requirements.',
   primaryLabel: 'Request a Quote',
   secondaryLabel: 'Search Catalog',
 }

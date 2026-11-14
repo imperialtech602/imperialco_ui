@@ -119,7 +119,7 @@ export default function CatalogPage() {
             Search Comparator &amp; RLD Catalog
           </h1>
           <p className="mt-3 text-sm text-slate-body sm:text-base">
-            Live inventory from our product database, ready to quote.
+            1000+ Products in our database ready to be quoted
           </p>
         </div>
 
