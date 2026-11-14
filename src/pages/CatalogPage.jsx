@@ -249,7 +249,7 @@ export default function CatalogPage() {
             <span>#</span>
             <span>Product</span>
             <span>Therapeutic Class</span>
-            <span>Country</span>
+            <span>Country of Origin</span>
             <span>Drug Form</span>
             <span className="text-right">Action</span>
           </div>
