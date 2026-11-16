@@ -59,10 +59,7 @@ export default function AdminLoginPage() {
               <h1 className="mt-8 text-3xl font-extrabold tracking-tight text-brand sm:text-4xl">
                 Admin operations
               </h1>
-              <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-body sm:text-[15px]">
-                Manage comparator catalog inventory, import Excel product sheets, and
-                process RFQ orders from the live site.
-              </p>
+             
             </div>
           </section>
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { Download, Plus, Upload, Pencil, Trash2, Package } from 'lucide-react'
+import { Download, Plus, Upload, Pencil, Trash2, Package, RefreshCw } from 'lucide-react'
 import Swal from 'sweetalert2'
 import { downloadProductTemplate } from '@/api/products'
 import {
@@ -9,6 +9,7 @@ import {
   useGetProductMetaQuery,
   useGetProductsQuery,
   useImportProductsMutation,
+  useSyncProductsFromSheetsMutation,
 } from '@/features/admin/adminApi'
 import Button from '@/components/ui/Button'
 import ProductEditorModal from '@/components/admin/ProductEditorModal'
@@ -60,6 +61,7 @@ export default function AdminProductsPage() {
   const { data: meta } = useGetProductMetaQuery()
   const [deleteProduct] = useDeleteProductMutation()
   const [importProducts, { isLoading: importing }] = useImportProductsMutation()
+  const [syncFromSheets, { isLoading: syncing }] = useSyncProductsFromSheetsMutation()
 
   const products = listData?.items || []
   const pagination = listData?.pagination || { page: 1, pages: 1, total: 0 }
@@ -191,6 +193,59 @@ export default function AdminProductsPage() {
     }
   }
 
+  const onSyncSheets = async () => {
+    const confirm = await Swal.fire({
+      icon: 'question',
+      title: 'Sync from Google Sheets?',
+      text: 'Pull the latest items tab and upsert products by item id.',
+      showCancelButton: true,
+      confirmButtonColor: '#282a74',
+      cancelButtonColor: '#7a7d96',
+      confirmButtonText: 'Sync now',
+    })
+    if (!confirm.isConfirmed) return
+
+    setMessage('')
+    setActionError('')
+
+    void Swal.fire({
+      title: 'Syncing products…',
+      html: 'Reading Google Sheets and updating the catalog.<br/><span class="text-sm opacity-70">This can take a short while.</span>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    })
+
+    try {
+      const result = await syncFromSheets().unwrap()
+      const summary =
+        `${result.created} created, ${result.updated} updated of ${result.total}` +
+        (result.errors?.length ? ` (${result.errors.length} warnings)` : '')
+      setMessage(`Sheet sync: ${summary}`)
+      setFilters((prev) => ({ ...prev, page: 1 }))
+      await Swal.fire({
+        icon: 'success',
+        title: 'Sync complete',
+        text: summary,
+        confirmButtonColor: '#282a74',
+        timer: 2800,
+        showConfirmButton: true,
+      })
+    } catch (err) {
+      const msg = err.message || 'Sheet sync failed'
+      setActionError(msg)
+      await Swal.fire({
+        icon: 'error',
+        title: 'Sheet sync failed',
+        text: msg,
+        confirmButtonColor: '#282a74',
+      })
+    }
+  }
+
   const showLoading = isLoading && !isSuccess && !listData
 
   return (
@@ -198,9 +253,18 @@ export default function AdminProductsPage() {
       <PageHero
         eyebrow="Catalog inventory"
         title="Products"
-        description="Add, search, filter, and import products. Excel rows upsert by item id."
+        description="Add, search, filter, and import products. Sheets/Excel rows upsert by item id. Midnight cron keeps the catalog current."
         actions={
           <>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onSyncSheets}
+              disabled={syncing}
+            >
+              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Syncing…' : 'Sync Sheets'}
+            </Button>
             <Button variant="secondary" size="sm" onClick={onDownloadTemplate}>
               <Download className="h-4 w-4" />
               Template
@@ -296,7 +360,7 @@ export default function AdminProductsPage() {
                 onClear: () => applyFilters({ countryOfOrigin: 'all' }),
               },
               {
-                label: 'Drug Form',
+                label: 'Dosage Form',
                 value: filters.dosageForm,
                 hidden: filters.dosageForm === 'all',
                 onClear: () => applyFilters({ dosageForm: 'all' }),

@@ -61,6 +61,12 @@ export const adminApi = createApi({
       invalidatesTags: ['Products', 'ProductMeta', 'Dashboard'],
     }),
 
+    syncProductsFromSheets: builder.mutation({
+      query: () => ({ url: '/products/sync/sheets/manual', method: 'POST' }),
+      transformResponse: (response) => response?.data ?? response,
+      invalidatesTags: ['Products', 'ProductMeta', 'Dashboard'],
+    }),
+
     getOrders: builder.query({
       query: (params = {}) =>
         `/orders${toQuery({ ...params, limit: params.limit ?? 20 })}`,
@@ -149,6 +155,7 @@ export const {
   useGetProductMetaQuery,
   useDeleteProductMutation,
   useImportProductsMutation,
+  useSyncProductsFromSheetsMutation,
   useGetOrdersQuery,
   useGetOrderQuery,
   useUpdateOrderMutation,

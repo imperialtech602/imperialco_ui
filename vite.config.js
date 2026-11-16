@@ -6,6 +6,26 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Local frontend → local API by default (avoids production CORS).
+// Override with VITE_API_PROXY_TARGET=https://imperialco-backend.onrender.com if needed.
+const apiProxyTarget =
+  process.env.VITE_API_PROXY_TARGET || 'http://localhost:5000'
+
+function apiProxy() {
+  return {
+    target: apiProxyTarget,
+    changeOrigin: true,
+    secure: true,
+    configure(proxy) {
+      // Browser Origin (e.g. localhost:5174) must not be forwarded to the API,
+      // or production CORS will reject the proxied request.
+      proxy.on('proxyReq', (proxyReq) => {
+        proxyReq.removeHeader('origin')
+      })
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -15,16 +35,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'https://imperialco-backend.onrender.com',
-        changeOrigin: true,
-        secure: true,
-      },
-      '/uploads': {
-        target: 'https://imperialco-backend.onrender.com',
-        changeOrigin: true,
-        secure: true,
-      },
+      '/api': apiProxy(),
+      '/uploads': apiProxy(),
     },
   },
 })

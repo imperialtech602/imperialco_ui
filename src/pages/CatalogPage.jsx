@@ -162,7 +162,7 @@ export default function CatalogPage() {
             </label>
             <label className="flex-1 text-left">
               <span className="mb-1.5 block text-xs font-semibold text-slate-soft">
-                Drug Form
+                Dosage Form
               </span>
               <select
                 value={drugForm}
@@ -200,7 +200,7 @@ export default function CatalogPage() {
                 onClear: () => dispatch(setCountry('All countries')),
               },
               {
-                label: 'Drug Form',
+                label: 'Dosage Form',
                 value: drugForm,
                 display: formatFilterLabel(drugForm),
                 hidden: drugForm === 'All forms',
@@ -250,7 +250,7 @@ export default function CatalogPage() {
             <span>Product</span>
             <span>Therapeutic Class</span>
             <span>Country of Origin</span>
-            <span>Drug Form</span>
+            <span>Dosage Form</span>
             <span className="text-right">Action</span>
           </div>
 
@@ -308,7 +308,7 @@ export default function CatalogPage() {
                     </div>
                     <div>
                       <span className="mb-1 block text-xs font-semibold uppercase text-slate-soft md:hidden">
-                        Drug Form
+                        Dosage Form
                       </span>
                       <DrugFormPill value={product.drugForm || product.dosageForm} />
                     </div>
