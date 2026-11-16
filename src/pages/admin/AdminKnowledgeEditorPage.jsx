@@ -129,12 +129,21 @@ export default function AdminKnowledgeEditorPage() {
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [title, setTitle] = useState('')
+  const [excerpt, setExcerpt] = useState('')
   const [tags, setTags] = useState([])
   const [status, setStatus] = useState('draft')
+  const [publishedAt, setPublishedAt] = useState('')
   const [isTemplate, setIsTemplate] = useState(false)
   const [blocks, setBlocks] = useState(() => [createBlock('text')])
   const [dragging, setDragging] = useState(false)
   const [dropIndex, setDropIndex] = useState(null)
+
+  const toDateInput = (value) => {
+    if (!value) return ''
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toISOString().slice(0, 10)
+  }
 
   useEffect(() => {
     document.title = `${isNew ? 'New post' : 'Edit post'} | Knowledge Hub`
@@ -145,8 +154,10 @@ export default function AdminKnowledgeEditorPage() {
         if (!active) return
         const post = res.data
         setTitle(post.title || '')
+        setExcerpt(post.excerpt || '')
         setTags(tagsFromPost(post))
         setStatus(post.status || 'draft')
+        setPublishedAt(toDateInput(post.publishedAt))
         setIsTemplate(Boolean(post.isTemplate))
         setBlocks(
           post.blocks?.length ? post.blocks.map(hydrateBlock) : [createBlock('text')],
@@ -243,8 +254,10 @@ export default function AdminKnowledgeEditorPage() {
 
   const buildPayload = () => ({
     title: title.trim(),
+    excerpt: excerpt.trim(),
     tags,
     status,
+    publishedAt: publishedAt || undefined,
     blocks: blocks.map((block) => {
       if (block.type === 'cta') {
         return {
@@ -405,6 +418,28 @@ export default function AdminKnowledgeEditorPage() {
             className={fieldClass}
             placeholder="What is a Reference Listed Drug (RLD)…"
           />
+        </label>
+        <label className="mt-4 block">
+          <span className={labelClass}>Short explanation (card summary)</span>
+          <textarea
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            rows={3}
+            className={`${fieldClass} !h-auto py-2.5`}
+            placeholder="Shown on the Knowledge Hub article card on the main page"
+          />
+        </label>
+        <label className="mt-4 block">
+          <span className={labelClass}>Publish date</span>
+          <input
+            type="date"
+            value={publishedAt}
+            onChange={(e) => setPublishedAt(e.target.value)}
+            className={fieldClass}
+          />
+          <p className="mt-1.5 text-[11px] text-slate-soft">
+            Used on the public Knowledge Hub cards. Leave blank to use today when publishing.
+          </p>
         </label>
         <div className="mt-4">
           <TagInput tags={tags} onChange={setTags} label="Tags" />

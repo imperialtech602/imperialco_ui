@@ -37,24 +37,40 @@ function CtaActions({ cta, variant }) {
   )
 }
 
-function BoxedCta({ cta }) {
+function BulletList({ items = [] }) {
+  if (!items.length) return null
   return (
-    <aside className="my-10 rounded-[28px] border border-brand/10 bg-brand-muted/70 px-6 py-7 sm:px-8">
+    <ul className="mt-3 space-y-2 text-sm text-slate-body sm:text-[15px]">
+      {items.filter(Boolean).map((item) => (
+        <li key={item} className="flex gap-2">
+          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function BoxedCta({ cta }) {
+  const supportBullets = cta.supportBullets || []
+  return (
+    <aside className="my-10 rounded-[28px] border border-brand/10 bg-[#f5f6f8] px-6 py-7 sm:px-8">
       {cta.headline ? (
-        <h3 className="text-xl font-extrabold text-brand sm:text-2xl">{cta.headline}</h3>
+        <h3 className="text-xl font-normal text-brand sm:text-2xl">{cta.headline}</h3>
       ) : null}
       {cta.body ? (
-        <p className="mt-3 text-sm leading-relaxed text-slate-body">{cta.body}</p>
+        <p className="mt-3 text-sm leading-relaxed text-slate-body sm:text-[15px]">{cta.body}</p>
       ) : null}
-      {cta.bullets?.length ? (
-        <ul className="mt-4 space-y-2 text-sm text-slate-body">
-          {cta.bullets.filter(Boolean).map((item) => (
-            <li key={item} className="flex gap-2">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+      <BulletList items={cta.bullets || []} />
+      {cta.supportIntro || supportBullets.length ? (
+        <div className="mt-5">
+          {cta.supportIntro ? (
+            <p className="text-sm leading-relaxed text-slate-body sm:text-[15px]">
+              {cta.supportIntro}
+            </p>
+          ) : null}
+          <BulletList items={supportBullets} />
+        </div>
       ) : null}
       <CtaActions cta={cta} variant="boxed" />
     </aside>
@@ -63,16 +79,33 @@ function BoxedCta({ cta }) {
 
 function BannerCta({ cta }) {
   return (
-    <aside className="my-10 overflow-hidden rounded-[28px] bg-brand px-6 py-8 text-white sm:px-10 sm:py-10">
+    <aside className="my-10 overflow-hidden rounded-[28px] bg-[#f5f6f8] px-6 py-8 sm:px-10 sm:py-10">
       {cta.headline ? (
-        <h3 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+        <h3 className="text-2xl font-normal tracking-tight text-brand sm:text-3xl">
           {cta.headline}
         </h3>
       ) : null}
       {cta.body ? (
-        <p className="mt-3 max-w-2xl text-sm text-white/75 sm:text-base">{cta.body}</p>
+        <p className="mt-3 max-w-2xl text-sm text-slate-body sm:text-base">{cta.body}</p>
       ) : null}
-      <CtaActions cta={cta} variant="banner" />
+      <div className="mt-6 flex flex-wrap gap-3">
+        {visibleCtaButtons(cta).map((button, index) => {
+          const to = button.to || '/products'
+          return (
+            <Link
+              key={`${button.label}-${index}`}
+              to={to}
+              className={
+                index === 0
+                  ? 'inline-flex h-11 items-center rounded-full bg-brand px-5 text-sm font-medium text-white'
+                  : 'inline-flex h-11 items-center rounded-full border border-brand px-5 text-sm font-medium text-brand'
+              }
+            >
+              {button.label}
+            </Link>
+          )
+        })}
+      </div>
     </aside>
   )
 }
@@ -93,14 +126,14 @@ export default function PostBlocks({ blocks = [] }) {
         return (
           <section key={block.id || index}>
             {block.heading ? (
-              <h2 className="text-xl font-extrabold text-brand sm:text-2xl">
+              <h2 className="text-[1.75rem] font-normal leading-tight text-brand">
                 {block.heading}
               </h2>
             ) : null}
             {block.body ? (
               <div
                 className={[
-                  'rich-text max-w-none text-[15px] leading-relaxed text-slate-body',
+                  'rich-text max-w-none text-lg font-normal leading-[1.75] text-[#0c0c0c]',
                   block.heading ? 'mt-3' : '',
                 ].join(' ')}
                 dangerouslySetInnerHTML={{

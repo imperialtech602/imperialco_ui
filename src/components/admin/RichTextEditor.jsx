@@ -106,7 +106,7 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
       </div>
       <div
         ref={editorRef}
-        className="rich-text min-h-[180px] px-3 py-3 text-sm leading-relaxed text-ink outline-none"
+        className="rich-text font-article min-h-[180px] px-3 py-3 text-lg font-normal leading-[1.75] text-[#0c0c0c] outline-none"
         contentEditable
         role="textbox"
         aria-multiline="true"

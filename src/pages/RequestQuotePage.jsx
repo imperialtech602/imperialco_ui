@@ -12,7 +12,6 @@ import { submitOrder } from '@/api/orders'
 import Button from '@/components/ui/Button'
 import CheckIcon from '@/components/ui/CheckIcon'
 import MiniHowItWorks from '@/components/shared/MiniHowItWorks'
-import logoFull from '@/assets/imperial-logo-full.png'
 
 const EMPTY_FORM = {
   customProduct: '',
@@ -32,17 +31,26 @@ const EMPTY_FORM = {
 }
 
 const NEXT_STEPS = [
-  'We review your product list and study requirements',
-  'Availability and origin options are confirmed',
-  'Pricing, lead time, and docs scope are prepared',
-  'You receive a formal quotation to approve',
+  'Review your molecule list and requirements',
+  'Confirm availability and batch details',
+  'Provide pricing and lead time estimate',
+  'Send detailed quotation within 24-48 hours',
 ]
 
 const WHY_US = [
-  'SRA-origin products where feasible',
-  'Clear lead-time planning',
-  'GDP-aligned documentation',
+  'SRA-origin reference products; batch and expiry visibility provided',
+  '32-day average delivery time',
+  'Complete GDP documentation',
   'Temperature-controlled logistics',
+]
+
+const CONTACT_FIELDS = [
+  { name: 'firstName', label: 'First name', required: true },
+  { name: 'lastName', label: 'Last name', required: true },
+  { name: 'company', label: 'Company name', required: true },
+  { name: 'jobTitle', label: 'Job title', required: false },
+  { name: 'email', label: 'Email address', type: 'email', required: true },
+  { name: 'country', label: 'Country', required: false },
 ]
 
 export default function RequestQuotePage() {
@@ -123,13 +131,6 @@ export default function RequestQuotePage() {
   return (
     <main id="top">
       <section className="container-page pt-8 pb-8 text-center sm:pt-12">
-        <div className="mx-auto mb-5 flex justify-center">
-          <img
-            src={logoFull}
-            alt="Imperial Co"
-            className="h-12 w-auto max-w-[240px] object-contain sm:h-14"
-          />
-        </div>
         <div className="flex items-center justify-center gap-3">
           <h1 className="text-[1.75rem] font-extrabold tracking-tight text-brand sm:text-4xl">
             Request a Quote
@@ -205,109 +206,43 @@ export default function RequestQuotePage() {
                 )}
               </div>
 
-              {rfqProducts.length === 0 ? (
-                <div className="mt-6 border-t border-brand/8 pt-6">
-                  <p className="text-sm font-semibold text-brand">
-                    Can&apos;t find what you&apos;re looking for?
-                  </p>
-                  <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                    <label className="sm:col-span-1">
-                      <span className={labelClass}>Product name</span>
-                      <input
-                        name="customProduct"
-                        value={form.customProduct}
-                        onChange={onChange}
-                        className={fieldClass}
-                        placeholder="Molecule / brand"
-                      />
-                    </label>
-                    <label>
-                      <span className={labelClass}>No. of packs</span>
-                      <input
-                        name="packs"
-                        value={form.packs}
-                        onChange={onChange}
-                        className={fieldClass}
-                        placeholder="Qty"
-                      />
-                    </label>
-                    <label>
-                      <span className={labelClass}>Origin preference</span>
-                      <input
-                        name="originPreference"
-                        value={form.originPreference}
-                        onChange={onChange}
-                        className={fieldClass}
-                        placeholder="e.g. FDA / EU"
-                      />
-                    </label>
-                  </div>
-                </div>
-              ) : null}
-
-              <label className="mt-5 block">
-                <span className={labelClass}>Attachment</span>
-                <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-brand/20 bg-brand-muted/40 px-4 py-8 text-center transition hover:bg-brand-muted">
-                  <Upload className="h-6 w-6 text-brand" />
-                  <span className="mt-2 text-sm font-medium text-brand">
-                    {fileName || 'Upload Excel, Doc, PDF, or image'}
-                  </span>
-                  <span className="mt-1 text-xs text-slate-soft">Max 10MB</span>
-                  <input
-                    type="file"
-                    accept=".xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png,.gif,.webp,.bmp,.heic,.heif,image/*"
-                    className="sr-only"
-                    onChange={(e) => {
-                      const next = e.target.files?.[0] || null
-                      setFile(next)
-                      setFileName(next?.name || '')
-                    }}
+              <div className="mt-6 border-t border-brand/8 pt-6">
+                <p className="text-sm font-semibold text-brand">
+                  Can&apos;t find what you&apos;re looking for?
+                </p>
+                <p className="mt-1 text-sm text-slate-body">
+                  Give us your custom requirements and we will get back to you.
+                </p>
+                <label className="mt-4 block">
+                  <span className={labelClass}>Requirements</span>
+                  <textarea
+                    name="customProduct"
+                    rows={4}
+                    value={form.customProduct}
+                    onChange={onChange}
+                    className="w-full resize-y rounded-xl border border-brand/10 bg-brand-muted/50 px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/30 focus:bg-white focus:ring-2 focus:ring-brand/15"
+                    placeholder="Molecule, brand, strength, pack size, destination, special handling…"
                   />
                 </label>
-              </label>
-
-              <label className="mt-5 block">
-                <span className={labelClass}>Additional notes</span>
-                <textarea
-                  name="notes"
-                  rows={4}
-                  value={form.notes}
-                  onChange={onChange}
-                  className="w-full resize-y rounded-xl border border-brand/10 bg-brand-muted/50 px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/30 focus:bg-white focus:ring-2 focus:ring-brand/15"
-                  placeholder="Strength, pack size, destination, special handling…"
-                />
-              </label>
-
-              <div className="mt-5 grid gap-4 sm:grid-cols-3">
-                <label>
-                  <span className={labelClass}>Intended use</span>
-                  <input
-                    name="intendedUse"
-                    value={form.intendedUse}
-                    onChange={onChange}
-                    className={fieldClass}
-                    placeholder="ANDA / BE / Clinical"
-                  />
-                </label>
-                <label>
-                  <span className={labelClass}>Target market</span>
-                  <input
-                    name="targetMarket"
-                    value={form.targetMarket}
-                    onChange={onChange}
-                    className={fieldClass}
-                    placeholder="Submission market"
-                  />
-                </label>
-                <label>
-                  <span className={labelClass}>Required-by date</span>
-                  <input
-                    type="date"
-                    name="requiredBy"
-                    value={form.requiredBy}
-                    onChange={onChange}
-                    className={fieldClass}
-                  />
+                <label className="mt-5 block">
+                  <span className={labelClass}>Attach your requirements</span>
+                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-brand/20 bg-brand-muted/40 px-4 py-8 text-center transition hover:bg-brand-muted">
+                    <Upload className="h-6 w-6 text-brand" />
+                    <span className="mt-2 text-sm font-medium text-brand">
+                      {fileName || 'Upload Excel, Doc, PDF, or image'}
+                    </span>
+                    <span className="mt-1 text-xs text-slate-soft">Max 10MB</span>
+                    <input
+                      type="file"
+                      accept=".xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png,.gif,.webp,.bmp,.heic,.heif,image/*"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const next = e.target.files?.[0] || null
+                        setFile(next)
+                        setFileName(next?.name || '')
+                      }}
+                    />
+                  </label>
                 </label>
               </div>
             </div>
@@ -315,25 +250,17 @@ export default function RequestQuotePage() {
             <div className="rounded-2xl border border-brand/8 bg-white p-5 sm:p-7">
               <h2 className="text-lg font-bold text-brand">Contact Information</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                {[
-                  { name: 'firstName', label: 'First name' },
-                  { name: 'lastName', label: 'Last name' },
-                  { name: 'company', label: 'Company name' },
-                  { name: 'jobTitle', label: 'Job title' },
-                  { name: 'email', label: 'Email address', type: 'email' },
-                  { name: 'phone', label: 'Phone number', type: 'tel' },
-                  { name: 'country', label: 'Country' },
-                ].map((field) => (
+                {CONTACT_FIELDS.map((field) => (
                   <label
                     key={field.name}
                     className={field.name === 'country' ? 'sm:col-span-2' : undefined}
                   >
                     <span className={labelClass}>
                       {field.label}
-                      <span className="text-red-500"> *</span>
+                      {field.required ? <span className="text-red-500"> *</span> : null}
                     </span>
                     <input
-                      required
+                      required={field.required}
                       type={field.type || 'text'}
                       name={field.name}
                       value={form[field.name]}
@@ -358,21 +285,31 @@ export default function RequestQuotePage() {
 
           <aside className="space-y-4 lg:sticky lg:top-24">
             <div className="rounded-2xl bg-brand p-6 text-white">
-              <h3 className="text-lg font-bold">Custom RFQ</h3>
-              <p className="mt-2 text-sm text-white/75">
-                Need a hard-to-source comparator or multi-product list? Start a custom
-                request and our team will source options.
+              <h3 className="text-lg font-bold">Need immediate assistance?</h3>
+              <p className="mt-3 text-sm text-white/80">
+                Email:{' '}
+                <a href="mailto:cs@imperialco.biz" className="underline">
+                  cs@imperialco.biz
+                </a>
               </p>
-              <Link
-                to="/products"
-                className="mt-5 inline-flex h-10 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-brand"
-              >
-                Start custom request
-              </Link>
+              <p className="mt-2 text-sm text-white/80">
+                WhatsApp:{' '}
+                <a
+                  href="https://wa.me/971541620118"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline"
+                >
+                  +971 54 162 0118
+                </a>
+              </p>
             </div>
 
             <div className="rounded-2xl bg-brand-muted p-6">
               <h3 className="text-base font-bold text-brand">What happens next?</h3>
+              <p className="mt-2 text-sm text-slate-body">
+                Once you submit your request, our team will:
+              </p>
               <ul className="mt-4 space-y-2.5">
                 {NEXT_STEPS.map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-slate-body">
@@ -384,7 +321,7 @@ export default function RequestQuotePage() {
             </div>
 
             <div className="rounded-2xl bg-brand-muted p-6">
-              <h3 className="text-base font-bold text-brand">Why Imperial Co?</h3>
+              <h3 className="text-base font-bold text-brand">Why Imperial Co.?</h3>
               <ul className="mt-4 space-y-2.5">
                 {WHY_US.map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-slate-body">
@@ -393,17 +330,6 @@ export default function RequestQuotePage() {
                   </li>
                 ))}
               </ul>
-            </div>
-
-            <div className="rounded-2xl bg-brand p-6 text-white">
-              <h3 className="text-base font-bold">Need immediate assistance?</h3>
-              <p className="mt-2 text-sm text-white/75">
-                Email{' '}
-                <a href="mailto:quotes@imperialco.com" className="underline">
-                  quotes@imperialco.com
-                </a>{' '}
-                or WhatsApp our sourcing desk.
-              </p>
             </div>
           </aside>
         </div>

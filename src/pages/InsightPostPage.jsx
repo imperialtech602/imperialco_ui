@@ -4,26 +4,88 @@ import { fetchPublicPost } from '@/api/knowledge'
 import PostBlocks from '@/components/knowledge/PostBlocks'
 import TagPills from '@/components/knowledge/TagPills'
 import Button from '@/components/ui/Button'
+import { getStaticInsightBySlug } from '@/lib/insights'
+
+function formatArticleDate(value) {
+  if (!value) return ''
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+}
 
 export default function InsightPostPage() {
   const { slug } = useParams()
-  const [post, setPost] = useState(null)
+  const [post, setPost] = useState(() => getStaticInsightBySlug(slug))
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     window.scrollTo(0, 0)
     setLoading(true)
+    setError('')
+    const fallback = getStaticInsightBySlug(slug)
+    setPost(fallback)
+
     fetchPublicPost(slug)
       .then((res) => {
-        setPost(res.data)
-        document.title = `${res.data.title} | Imperial Co`
+        const data = res.data
+        if (!data?.title || /^new post$/i.test(String(data.title).trim())) {
+          if (fallback) {
+            setPost(fallback)
+            document.title = `${fallback.title} | Imperial Co`
+            return
+          }
+        }
+        const apiExcerpt = data.excerpt || ''
+        const tagLike =
+          fallback?.tags?.length &&
+          apiExcerpt &&
+          apiExcerpt
+            .split(/[,|/]/)
+            .map((part) => part.trim().toLowerCase())
+            .filter(Boolean)
+            .sort()
+            .join('|') ===
+            fallback.tags
+              .map((tag) => String(tag).trim().toLowerCase())
+              .filter(Boolean)
+              .sort()
+              .join('|')
+
+        // Prefer the canonical live-site static article body when present so
+        // abbreviated/stale API payloads cannot replace full content.
+        const preferStaticBlocks =
+          Boolean(fallback?.blocks?.length) &&
+          (fallback.blocks.length >= (data.blocks?.length || 0) ||
+            JSON.stringify(fallback.blocks).length >= JSON.stringify(data.blocks || []).length)
+
+        setPost({
+          ...data,
+          excerpt: tagLike || !apiExcerpt ? fallback?.excerpt || apiExcerpt : apiExcerpt,
+          tags: data.tags?.length ? data.tags : fallback?.tags || [],
+          blocks: preferStaticBlocks
+            ? fallback.blocks
+            : data.blocks?.length
+              ? data.blocks
+              : fallback?.blocks || [],
+          publishedAt: fallback?.publishedAt || data.publishedAt || null,
+        })
+        document.title = `${data.title} | Imperial Co`
       })
-      .catch((err) => setError(err.message || 'Post not found'))
+      .catch(() => {
+        if (fallback) {
+          setPost(fallback)
+          document.title = `${fallback.title} | Imperial Co`
+          return
+        }
+        setError('Post not found')
+      })
       .finally(() => setLoading(false))
   }, [slug])
 
-  if (loading) {
+  if (loading && !post) {
     return (
       <main className="container-page py-16 text-center text-sm text-slate-body">
         Loading article…
@@ -44,7 +106,7 @@ export default function InsightPostPage() {
   }
 
   return (
-    <main id="top">
+    <main id="top" className="font-article">
       <article className="container-page pt-8 pb-16 sm:pt-12">
         <Link
           to="/insights"
@@ -52,18 +114,30 @@ export default function InsightPostPage() {
         >
           ← Knowledge Hub
         </Link>
-        <h1 className="mt-5 max-w-4xl text-[1.75rem] font-extrabold leading-tight tracking-tight text-brand sm:text-4xl">
+        <h1 className="mt-5 max-w-4xl text-[1.75rem] font-normal leading-tight tracking-tight text-brand sm:text-[2.75rem] sm:leading-[1.15]">
           {post.title}
         </h1>
-        <p className="mt-3 text-sm text-slate-soft">
-          {post.publishedAt
-            ? new Date(post.publishedAt).toLocaleDateString()
-            : null}
-          {post.author?.name ? ` · ${post.author.name}` : ''}
-        </p>
-        <TagPills tags={post.tags} className="mt-5" />
 
-        <div className="mt-10 max-w-3xl">
+        {post.tags?.length ? (
+          <div className="mt-5 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center rounded-full border border-brand px-[11px] py-[5px] text-xs font-semibold text-brand"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <TagPills tags={post.tags} className="mt-5" />
+        )}
+
+        {post.publishedAt ? (
+          <p className="mt-4 text-sm text-[#0c0c0c]">{formatArticleDate(post.publishedAt)}</p>
+        ) : null}
+
+        <div className="article-body mt-8 max-w-3xl">
           <PostBlocks blocks={post.blocks} />
         </div>
       </article>

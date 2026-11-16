@@ -22,15 +22,6 @@ import {
   uniqueFilterOptions,
 } from '@/components/admin/adminUi'
 
-function DrugFormPill({ value }) {
-  if (!value) return null
-  return (
-    <span className="inline-flex items-center rounded-full bg-brand-muted px-3 py-1.5 text-xs font-bold tracking-wide text-brand ring-1 ring-brand/15">
-      {formatFilterLabel(value)}
-    </span>
-  )
-}
-
 export default function CatalogPage() {
   const dispatch = useDispatch()
   const [searchParams] = useSearchParams()
@@ -245,12 +236,11 @@ export default function CatalogPage() {
 
       <section className="mx-auto w-[92%] sm:w-[78%] pb-12 sm:pb-16">
         <div className="overflow-hidden rounded-2xl border border-brand/8 bg-white">
-          <div className="hidden grid-cols-[48px_1.5fr_1fr_0.9fr_0.9fr_auto] gap-4 border-b border-brand/8 bg-brand-muted/60 px-5 py-3 text-xs font-bold uppercase tracking-wide text-slate-soft md:grid">
+          <div className="hidden grid-cols-[48px_1.5fr_1fr_0.9fr_auto] gap-4 border-b border-brand/8 bg-brand-muted/60 px-5 py-3 text-xs font-bold uppercase tracking-wide text-slate-soft md:grid">
             <span>#</span>
             <span>Product</span>
             <span>Therapeutic Class</span>
             <span>Country of Origin</span>
-            <span>Dosage Form</span>
             <span className="text-right">Action</span>
           </div>
 
@@ -274,7 +264,7 @@ export default function CatalogPage() {
                 return (
                   <li
                     key={product.id}
-                    className="grid gap-3 px-4 py-4 sm:px-5 md:grid-cols-[48px_1.5fr_1fr_0.9fr_0.9fr_auto] md:items-center md:gap-4"
+                    className="grid gap-3 px-4 py-4 sm:px-5 md:grid-cols-[48px_1.5fr_1fr_0.9fr_auto] md:items-center md:gap-4"
                   >
                     <div className="hidden md:block">
                       <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-brand px-2 text-xs font-extrabold text-white shadow-sm shadow-brand/20">
@@ -305,12 +295,6 @@ export default function CatalogPage() {
                         Country
                       </span>
                       <CountryPill value={product.country || product.countryOfOrigin} />
-                    </div>
-                    <div>
-                      <span className="mb-1 block text-xs font-semibold uppercase text-slate-soft md:hidden">
-                        Dosage Form
-                      </span>
-                      <DrugFormPill value={product.drugForm || product.dosageForm} />
                     </div>
                     <div className="md:justify-self-end">
                       <Button

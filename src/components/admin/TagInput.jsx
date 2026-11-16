@@ -81,9 +81,5 @@ export function tagsFromPost(post = {}) {
   if (Array.isArray(post.tags) && post.tags.length) {
     return post.tags.map(normalizeTag).filter(Boolean)
   }
-  if (!post.excerpt) return []
-  return String(post.excerpt)
-    .split(/[,|/]/)
-    .map(normalizeTag)
-    .filter(Boolean)
+  return []
 }

@@ -261,12 +261,19 @@ export default function AdminShell() {
               >
                 <Menu className="h-5 w-5" />
               </button>
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-soft">
-                  Imperial Co
-                </p>
-                <p className="text-sm font-bold text-brand">Operations console</p>
-              </div>
+              <Link to="/admin" className="flex items-center gap-3">
+                <img
+                  src={logo}
+                  alt="Imperial Co"
+                  className="h-9 w-auto object-contain sm:h-10"
+                />
+                <div className="hidden sm:block">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-soft">
+                    Imperial Co
+                  </p>
+                  <p className="text-sm font-bold text-brand">Operations console</p>
+                </div>
+              </Link>
             </div>
 
             <div className="flex items-center gap-2">

@@ -117,20 +117,20 @@ export default function QuoteModal() {
             <form onSubmit={onSubmit} className="mt-6 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
-                  { name: 'firstName', label: 'First name', type: 'text' },
-                  { name: 'lastName', label: 'Last name', type: 'text' },
-                  { name: 'company', label: 'Company', type: 'text' },
-                  { name: 'jobTitle', label: 'Job title', type: 'text' },
-                  { name: 'email', label: 'Work email', type: 'email' },
-                  { name: 'phone', label: 'Phone number', type: 'tel' },
+                  { name: 'firstName', label: 'First name', type: 'text', required: true },
+                  { name: 'lastName', label: 'Last name', type: 'text', required: true },
+                  { name: 'company', label: 'Company', type: 'text', required: true },
+                  { name: 'jobTitle', label: 'Job title', type: 'text', required: false },
+                  { name: 'email', label: 'Work email', type: 'email', required: true },
+                  { name: 'country', label: 'Country', type: 'text', required: false },
                 ].map((field) => (
                   <label key={field.name} className="block">
                     <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-soft">
                       {field.label}
-                      <span className="text-red-500"> *</span>
+                      {field.required ? <span className="text-red-500"> *</span> : null}
                     </span>
                     <input
-                      required
+                      required={field.required}
                       name={field.name}
                       type={field.type}
                       value={form[field.name]}
@@ -140,21 +140,6 @@ export default function QuoteModal() {
                   </label>
                 ))}
               </div>
-
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-soft">
-                  Country
-                  <span className="text-red-500"> *</span>
-                </span>
-                <input
-                  required
-                  name="country"
-                  type="text"
-                  value={form.country}
-                  onChange={onChange}
-                  className="h-11 w-full rounded-xl border border-brand/10 bg-brand-muted/40 px-3 text-sm text-ink outline-none transition focus:border-brand/40 focus:bg-white focus:ring-2 focus:ring-brand/15"
-                />
-              </label>
 
               <label className="block">
                 <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-soft">

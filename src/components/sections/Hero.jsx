@@ -33,14 +33,11 @@ export default function Hero() {
 
         <div className="relative mx-auto max-w-3xl text-center">
           <h1 className="text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-brand sm:text-4xl lg:text-[2.65rem]">
-            Reference Listed Drugs (RLDs) for ANDA &amp; Bioequivalence Studies
+            Reference Listed Drugs (RLDs) and Comparator Sourcing for Pharmaceutical Development
           </h1>
-          <p className="mt-4 text-base font-semibold text-brand sm:text-lg">
-            Sourced with Batch-Level Traceability
-          </p>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-body sm:text-[15px]">
-            SRA-origin comparator sourcing aligned with development timelines,
-            regulatory expectations, and study-critical handling requirements.
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-body sm:text-[15px] sm:text-base">
+            SRA origin pharmaceutical reference products for bioequivalence studies,
+            comparative dissolution testing and regulatory submissions
           </p>
 
           <ul className="mx-auto mt-8 grid max-w-xl grid-cols-1 gap-x-10 gap-y-3 text-left sm:grid-cols-2">
