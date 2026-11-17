@@ -242,12 +242,33 @@ export default function RequestQuotePage() {
                               >
                                 <Minus className="h-4 w-4" />
                               </button>
-                              <span
-                                className="min-w-10 px-1 text-center text-sm font-extrabold tabular-nums text-brand"
-                                aria-live="polite"
-                              >
-                                {product.quantity ?? 1}
-                              </span>
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                value={product.quantity ?? 1}
+                                aria-label={`Quantity for ${product.name}`}
+                                className="h-9 w-14 border-x border-brand/10 bg-white px-1 text-center text-sm font-extrabold tabular-nums text-brand outline-none focus:bg-brand-muted/40"
+                                onChange={(e) => {
+                                  const digits = e.target.value.replace(/\D/g, '')
+                                  dispatch(
+                                    setRfqQuantity({
+                                      id: product.id,
+                                      quantity: digits === '' ? 1 : digits,
+                                    }),
+                                  )
+                                }}
+                                onBlur={(e) => {
+                                  const digits = e.target.value.replace(/\D/g, '')
+                                  dispatch(
+                                    setRfqQuantity({
+                                      id: product.id,
+                                      quantity: digits === '' ? 1 : digits,
+                                    }),
+                                  )
+                                }}
+                                onFocus={(e) => e.target.select()}
+                              />
                               <button
                                 type="button"
                                 aria-label={`Increase quantity for ${product.name}`}
