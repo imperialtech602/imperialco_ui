@@ -295,7 +295,7 @@ export default function RequestQuotePage() {
                     value={form.customProduct}
                     onChange={onChange}
                     className="w-full resize-y rounded-xl border border-brand/10 bg-brand-muted/50 px-3 py-2.5 text-sm text-ink outline-none focus:border-brand/30 focus:bg-white focus:ring-2 focus:ring-brand/15"
-                    placeholder="Molecule, brand, strength, pack size, destination, special handling…"
+                    placeholder="Generic, brand, strength, dosage form, quantity, country of origin"
                   />
                 </label>
                 <label className="mt-5 block">
