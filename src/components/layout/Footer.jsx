@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { Mail } from 'lucide-react'
+import { Lock, Mail } from 'lucide-react'
 import logo from '@/assets/imperial-logo.png'
 import { FOOTER_BLURB, FOOTER_COLUMNS } from '@/data/landingContent'
 
@@ -89,27 +89,27 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex items-center justify-center gap-4">
-          {SOCIAL.map(({ label, Icon, href }) => (
-            <a
-              key={label}
-              href={href}
-              aria-label={label}
-              target={href.startsWith('mailto:') ? undefined : '_blank'}
-              rel={href.startsWith('mailto:') ? undefined : 'noreferrer'}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-brand/10 text-brand transition-colors hover:bg-brand hover:text-white"
-            >
-              <Icon className="h-4 w-4" />
-            </a>
-          ))}
-        </div>
-
-        <div className="mt-8 flex justify-center">
+        <div className="relative mt-12 flex items-center justify-center">
+          <div className="flex items-center gap-5">
+            {SOCIAL.map(({ label, Icon, href }) => (
+              <a
+                key={label}
+                href={href}
+                aria-label={label}
+                target={href.startsWith('mailto:') ? undefined : '_blank'}
+                rel={href.startsWith('mailto:') ? undefined : 'noreferrer'}
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-brand/10 text-brand transition-colors hover:bg-brand hover:text-white"
+              >
+                <Icon className="h-6 w-6" />
+              </a>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() => navigate(adminToken ? '/admin' : '/admin/login')}
-            className="inline-flex h-9 items-center justify-center rounded-full border border-brand/15 bg-white px-4 text-xs font-semibold text-brand transition hover:bg-brand hover:text-white"
+            className="absolute right-0 inline-flex h-9 items-center justify-center gap-2 rounded-full border border-brand/15 bg-white px-4 text-xs font-semibold text-brand transition hover:bg-brand hover:text-white"
           >
+            <Lock className="h-3.5 w-3.5" />
             {adminToken ? 'Admin' : 'Login'}
           </button>
         </div>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
-import { Plus, Trash2, Upload } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Minus, Plus, Trash2, Upload } from 'lucide-react'
 import {
   removeFromRfq,
   clearRfq,
+  setRfqQuantity,
   selectRfqCount,
   selectRfqProducts,
 } from '@/features/catalog/catalogSlice'
@@ -26,7 +27,6 @@ const EMPTY_FORM = {
   company: '',
   jobTitle: '',
   email: '',
-  phone: '',
   country: '',
 }
 
@@ -55,15 +55,20 @@ const CONTACT_FIELDS = [
 
 export default function RequestQuotePage() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const rfqProducts = useSelector(selectRfqProducts)
   const rfqCount = useSelector(selectRfqCount)
   const [form, setForm] = useState(EMPTY_FORM)
   const [file, setFile] = useState(null)
   const [fileName, setFileName] = useState('')
-  const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
-  const [orderNumber, setOrderNumber] = useState('')
+  const [requirementError, setRequirementError] = useState('')
+
+  const hasCatalog = rfqProducts.length > 0
+  const hasManual = Boolean(form.customProduct.trim())
+  const hasAttachment = Boolean(file)
+  const hasRequirement = hasCatalog || hasManual || hasAttachment
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -72,6 +77,10 @@ export default function RequestQuotePage() {
       document.title = 'Imperial Co | RLD & Comparator Sourcing'
     }
   }, [])
+
+  useEffect(() => {
+    if (hasRequirement && requirementError) setRequirementError('')
+  }, [hasRequirement, requirementError])
 
   const onChange = (event) => {
     const { name, value } = event.target
@@ -82,21 +91,40 @@ export default function RequestQuotePage() {
     event.preventDefault()
     setSubmitting(true)
     setSubmitError('')
+    setRequirementError('')
+
+    if (!hasRequirement) {
+      setRequirementError(
+        'Product selection, manual requirement, or attachment — at least one is required.',
+      )
+      document.getElementById('product-requirements')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+      setSubmitting(false)
+      return
+    }
+
     try {
       const result = await submitOrder(
         {
           source: 'rfq',
           ...form,
-          products: rfqProducts,
+          products: rfqProducts.map((product) => ({
+            ...product,
+            quantity: product.quantity || 1,
+          })),
         },
         file,
       )
-      setOrderNumber(result.data.orderNumber)
-      setSubmitted(true)
+      dispatch(clearRfq())
       setForm(EMPTY_FORM)
       setFile(null)
       setFileName('')
-      dispatch(clearRfq())
+      navigate('/thank-you', {
+        replace: true,
+        state: { orderNumber: result.data.orderNumber },
+      })
     } catch (error) {
       setSubmitError(error.message || 'Unable to submit request')
     } finally {
@@ -108,25 +136,6 @@ export default function RequestQuotePage() {
     'h-11 w-full rounded-xl border border-brand/10 bg-brand-muted/50 px-3 text-sm text-ink outline-none transition focus:border-brand/30 focus:bg-white focus:ring-2 focus:ring-brand/15'
 
   const labelClass = 'mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-soft'
-
-  if (submitted) {
-    return (
-      <main id="top" className="container-page py-16 text-center sm:py-24">
-        <h1 className="text-3xl font-extrabold text-brand">Request received</h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm text-slate-body sm:text-base">
-          Your order {orderNumber ? <strong>{orderNumber}</strong> : null} is in
-          our queue. Our sourcing team will follow up with availability, lead time,
-          and shipping options.
-        </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button onClick={() => setSubmitted(false)}>Submit another request</Button>
-          <Link to="/products">
-            <Button variant="outline">Back to catalog</Button>
-          </Link>
-        </div>
-      </main>
-    )
-  }
 
   return (
     <main id="top">
@@ -151,8 +160,24 @@ export default function RequestQuotePage() {
       <section className="container-page pb-14 sm:pb-20">
         <div className="grid items-start gap-8 lg:grid-cols-[1.5fr_0.85fr] lg:gap-10">
           <form onSubmit={onSubmit} className="space-y-8">
-            <div className="rounded-2xl border border-brand/8 bg-white p-5 sm:p-7">
-              <h2 className="text-lg font-bold text-brand">Product Requirements</h2>
+            <div
+              id="product-requirements"
+              className={[
+                'rounded-2xl border bg-white p-5 sm:p-7',
+                requirementError ? 'border-red-300 ring-2 ring-red-100' : 'border-brand/8',
+              ].join(' ')}
+            >
+              <h2 className="text-lg font-bold text-brand">
+                Product Requirements <span className="text-red-500">*</span>
+              </h2>
+              <p className="mt-1 text-sm text-slate-body">
+                Product selection, manual requirement, or attachment. At least one.
+              </p>
+              {requirementError ? (
+                <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {requirementError}
+                </p>
+              ) : null}
 
               <div className="mt-5">
                 <div className="flex items-center justify-between gap-3">
@@ -184,22 +209,71 @@ export default function RequestQuotePage() {
                     {rfqProducts.map((product) => (
                       <li
                         key={product.id}
-                        className="flex items-start justify-between gap-3 rounded-xl bg-brand-muted px-4 py-3"
+                        className="flex flex-col gap-3 rounded-xl bg-brand-muted px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                       >
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className="text-sm font-semibold text-brand">{product.name}</p>
-                          <p className="mt-0.5 text-xs text-slate-soft">
-                            {product.manufacturer} · {product.country}
+                          <p className="mt-0.5 text-xs uppercase tracking-wide text-slate-soft">
+                            {product.manufacturer}
+                            {product.country || product.countryOfOrigin
+                              ? ` · ${String(product.country || product.countryOfOrigin).toUpperCase()}`
+                              : ''}
                           </p>
                         </div>
-                        <button
-                          type="button"
-                          aria-label={`Remove ${product.name}`}
-                          className="rounded-lg p-1.5 text-slate-soft hover:bg-white hover:text-brand"
-                          onClick={() => dispatch(removeFromRfq(product.id))}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center gap-3 self-end sm:self-auto">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-soft">
+                              Qty
+                            </span>
+                            <div className="inline-flex items-center overflow-hidden rounded-lg border border-brand/10 bg-white">
+                              <button
+                                type="button"
+                                aria-label={`Decrease quantity for ${product.name}`}
+                                className="inline-flex h-9 w-9 items-center justify-center text-brand transition hover:bg-brand-muted disabled:cursor-not-allowed disabled:opacity-40"
+                                disabled={(product.quantity ?? 1) <= 1}
+                                onClick={() =>
+                                  dispatch(
+                                    setRfqQuantity({
+                                      id: product.id,
+                                      quantity: Math.max(1, (product.quantity ?? 1) - 1),
+                                    }),
+                                  )
+                                }
+                              >
+                                <Minus className="h-4 w-4" />
+                              </button>
+                              <span
+                                className="min-w-10 px-1 text-center text-sm font-extrabold tabular-nums text-brand"
+                                aria-live="polite"
+                              >
+                                {product.quantity ?? 1}
+                              </span>
+                              <button
+                                type="button"
+                                aria-label={`Increase quantity for ${product.name}`}
+                                className="inline-flex h-9 w-9 items-center justify-center text-brand transition hover:bg-brand-muted"
+                                onClick={() =>
+                                  dispatch(
+                                    setRfqQuantity({
+                                      id: product.id,
+                                      quantity: Math.min(999999, (product.quantity ?? 1) + 1),
+                                    }),
+                                  )
+                                }
+                              >
+                                <Plus className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            aria-label={`Remove ${product.name}`}
+                            className="rounded-lg p-1.5 text-slate-soft hover:bg-white hover:text-brand"
+                            onClick={() => dispatch(removeFromRfq(product.id))}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>

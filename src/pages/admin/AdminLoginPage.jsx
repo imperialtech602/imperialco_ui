@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
-import logo from '@/assets/imperial-logo.png'
+import logoMark from '@/assets/imperial-logo-mark.png'
 import { loginAdmin } from '@/api/auth'
 import {
   authFailed,
@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
               className="pointer-events-none absolute -bottom-16 -left-8 h-56 w-56 rounded-full bg-brand/10 blur-3xl"
             />
             <div className="relative">
-              <img src={logo} alt="Imperial Co" className="h-12 w-auto object-contain" />
+              <img src={logoMark} alt="Imperial Co" className="h-14 w-14 object-contain" />
               <h1 className="mt-8 text-3xl font-extrabold tracking-tight text-brand sm:text-4xl">
                 Admin operations
               </h1>

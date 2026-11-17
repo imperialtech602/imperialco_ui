@@ -109,7 +109,6 @@ export default function AdminOrderDetailPage() {
             <DetailRow label="Name" value={`${order.firstName} ${order.lastName}`.trim()} />
             <DetailRow label="Company" value={order.company} />
             <DetailRow label="Email" value={order.email} />
-            <DetailRow label="Phone" value={order.phone} />
             <DetailRow label="Country" value={order.country} />
             <DetailRow label="Job title" value={order.jobTitle} />
           </dl>
@@ -236,6 +235,9 @@ export default function AdminOrderDetailPage() {
                     {product.itemName}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="inline-flex items-center rounded-full bg-brand px-3 py-1.5 text-xs font-extrabold text-white">
+                      Qty {product.quantity || 1}
+                    </span>
                     {product.manufacturer ? (
                       <span className="inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-bold text-brand ring-1 ring-brand/15">
                         {product.manufacturer}

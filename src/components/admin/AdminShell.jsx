@@ -12,7 +12,7 @@ import {
   BookOpen,
   Users,
 } from 'lucide-react'
-import logo from '@/assets/imperial-logo.png'
+import logoMark from '@/assets/imperial-logo-mark.png'
 import { logoutAdmin } from '@/api/auth'
 import { authCleared } from '@/features/admin/authSlice'
 import { hasPermission, isSuperAdmin } from '@/lib/permissions'
@@ -92,7 +92,7 @@ function SidebarBrand() {
   return (
     <Link to="/admin" className="flex items-center gap-3 px-1">
       <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white p-1.5 shadow-lg shadow-brand-dark/25">
-        <img src={logo} alt="Imperial Co" className="h-full w-full object-contain" />
+        <img src={logoMark} alt="Imperial Co" className="h-full w-full object-contain" />
       </div>
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">
@@ -263,9 +263,9 @@ export default function AdminShell() {
               </button>
               <Link to="/admin" className="flex items-center gap-3">
                 <img
-                  src={logo}
+                  src={logoMark}
                   alt="Imperial Co"
-                  className="h-9 w-auto object-contain sm:h-10"
+                  className="h-9 w-9 object-contain sm:h-10 sm:w-10"
                 />
                 <div className="hidden sm:block">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-soft">

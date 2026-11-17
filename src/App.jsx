@@ -11,6 +11,7 @@ import LogisticsHandlingPage from '@/pages/LogisticsHandlingPage'
 import LogisticsCompliancePage from '@/pages/LogisticsCompliancePage'
 import CatalogPage from '@/pages/CatalogPage'
 import RequestQuotePage from '@/pages/RequestQuotePage'
+import ThankYouPage from '@/pages/ThankYouPage'
 import FaqPage from '@/pages/FaqPage'
 import InsightsPage from '@/pages/InsightsPage'
 import InsightPostPage from '@/pages/InsightPostPage'
@@ -119,6 +120,7 @@ function AppFrame() {
           <Route path="/logistics-compliance" element={<LogisticsCompliancePage />} />
           <Route path="/products" element={<CatalogPage />} />
           <Route path="/request-quote" element={<RequestQuotePage />} />
+          <Route path="/thank-you" element={<ThankYouPage />} />
           <Route path="/insights" element={<InsightsPage />} />
           <Route path="/insights/:slug" element={<InsightPostPage />} />
           <Route path="/faq" element={<FaqPage />} />

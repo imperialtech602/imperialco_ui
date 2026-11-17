@@ -255,9 +255,9 @@ export function CountryPill({ value, size = 'md' }) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full bg-[#e8e9ff] font-bold tracking-wide text-brand ring-1 ring-brand/20 ${sizeClass}`}
+      className={`inline-flex items-center rounded-full bg-[#e8e9ff] font-bold uppercase tracking-wide text-brand ring-1 ring-brand/20 ${sizeClass}`}
     >
-      {formatFilterLabel(value)}
+      {String(value).trim().toUpperCase()}
     </span>
   )
 }

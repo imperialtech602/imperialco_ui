@@ -120,7 +120,12 @@ export default function AdminOrdersPage() {
                   <div className="text-sm text-slate-body">
                     <p>
                       {order.products?.length
-                        ? `${order.products.length} catalog item${order.products.length > 1 ? 's' : ''}`
+                        ? `${order.products.length} catalog item${order.products.length > 1 ? 's' : ''} · qty ${
+                            order.products.reduce(
+                              (sum, item) => sum + (Number(item.quantity) || 1),
+                              0,
+                            )
+                          }`
                         : order.customProduct || 'Custom request'}
                     </p>
                   </div>

@@ -4,15 +4,36 @@ import { fetchCatalog } from '@/api/products'
 export const CATALOG_PAGE_SIZE = 10
 const RFQ_STORAGE_KEY = 'imperial_rfq_v1'
 
+function normalizeQuantity(value) {
+  const digits = String(value ?? '').replace(/\D/g, '')
+  if (!digits) return 1
+  const n = Number.parseInt(digits, 10)
+  if (!Number.isFinite(n) || n < 1) return 1
+  return Math.min(999999, n)
+}
+
+function withQuantity(product, quantity) {
+  return {
+    ...product,
+    quantity: normalizeQuantity(
+      quantity !== undefined ? quantity : product?.quantity ?? 1,
+    ),
+  }
+}
+
 function loadRfqState() {
   try {
     const raw = localStorage.getItem(RFQ_STORAGE_KEY)
     if (!raw) return { rfqIds: [], rfqMap: {} }
     const parsed = JSON.parse(raw)
+    const rfqMap =
+      parsed.rfqMap && typeof parsed.rfqMap === 'object' ? parsed.rfqMap : {}
+    const normalizedMap = Object.fromEntries(
+      Object.entries(rfqMap).map(([id, product]) => [id, withQuantity(product)]),
+    )
     return {
       rfqIds: Array.isArray(parsed.rfqIds) ? parsed.rfqIds : [],
-      rfqMap:
-        parsed.rfqMap && typeof parsed.rfqMap === 'object' ? parsed.rfqMap : {},
+      rfqMap: normalizedMap,
     }
   } catch {
     return { rfqIds: [], rfqMap: {} }
@@ -106,7 +127,13 @@ const catalogSlice = createSlice({
       if (!state.rfqIds.includes(product.id)) {
         state.rfqIds.push(product.id)
       }
-      state.rfqMap[product.id] = product
+      const existing = state.rfqMap[product.id]
+      state.rfqMap[product.id] = withQuantity(product, existing?.quantity ?? 1)
+    },
+    setRfqQuantity(state, action) {
+      const { id, quantity } = action.payload || {}
+      if (!id || !state.rfqMap[id]) return
+      state.rfqMap[id] = withQuantity(state.rfqMap[id], quantity)
     },
     removeFromRfq(state, action) {
       const id = action.payload
@@ -130,6 +157,7 @@ export const {
   searchFailed,
   clearSearch,
   addToRfq,
+  setRfqQuantity,
   removeFromRfq,
   clearRfq,
 } = catalogSlice.actions
@@ -183,5 +211,7 @@ export const selectRfqProducts = (state) =>
   state.catalog.rfqIds
     .map((id) => state.catalog.rfqMap[id])
     .filter(Boolean)
+
+export { normalizeQuantity }
 
 export default catalogSlice.reducer
