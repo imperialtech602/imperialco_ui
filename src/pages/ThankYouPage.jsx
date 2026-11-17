@@ -33,7 +33,7 @@ export default function ThankYouPage() {
               <strong className="text-brand">{orderNumber}</strong>
             </>
           ) : null}{' '}
-          is in our queue. A confirmation email is on its way, and our sourcing
+          is in our queue. A confirmation email is on its way, and our customer service
           team will follow up with availability, lead time, and shipping options.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
