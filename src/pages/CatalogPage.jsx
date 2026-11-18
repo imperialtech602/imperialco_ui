@@ -304,7 +304,7 @@ export default function CatalogPage() {
                         onClick={() => dispatch(addToRfq(product))}
                         disabled={inRfq}
                       >
-                        {inRfq ? 'Added' : 'Add to RFQ'}
+                        {inRfq ? 'Added' : 'Add to Quote '}
                       </Button>
                     </div>
                   </li>

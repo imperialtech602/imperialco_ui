@@ -45,21 +45,24 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-white">
       <div className="mx-auto flex min-h-screen max-w-[1100px] flex-col justify-center px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="relative overflow-hidden rounded-[32px] bg-brand-soft px-6 py-10 sm:px-10 sm:py-14">
+          <section className="relative overflow-hidden rounded-[24px] bg-brand-soft px-5 py-6 sm:rounded-[32px] sm:px-10 sm:py-14">
             <div
               aria-hidden
-              className="pointer-events-none absolute -right-10 -top-12 h-48 w-48 rounded-full bg-brand-glow/15 blur-3xl"
+              className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-brand-glow/15 blur-3xl sm:h-48 sm:w-48"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute -bottom-16 -left-8 h-56 w-56 rounded-full bg-brand/10 blur-3xl"
+              className="pointer-events-none absolute -bottom-16 -left-8 h-36 w-36 rounded-full bg-brand/10 blur-3xl sm:h-56 sm:w-56"
             />
-            <div className="relative">
-              <img src={logoMark} alt="Imperial Co" className="h-14 w-14 object-contain" />
-              <h1 className="mt-8 text-3xl font-extrabold tracking-tight text-brand sm:text-4xl">
+            <div className="relative flex items-center gap-3 sm:block">
+              <img
+                src={logoMark}
+                alt="Imperial Co"
+                className="h-11 w-11 object-contain sm:h-14 sm:w-14"
+              />
+              <h1 className="text-2xl font-extrabold tracking-tight text-brand sm:mt-8 sm:text-4xl">
                 Admin operations
               </h1>
-             
             </div>
           </section>
 

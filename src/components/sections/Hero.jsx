@@ -20,27 +20,27 @@ export default function Hero() {
   }
 
   return (
-    <section className="container-page pt-6 pb-10 sm:pt-8 sm:pb-14">
-      <div className="relative overflow-hidden rounded-[28px] bg-brand-soft px-5 py-12 sm:rounded-[40px] sm:px-10 sm:py-16 lg:px-16 lg:py-[4.5rem]">
+    <section className="container-page pt-4 pb-8 sm:pt-8 sm:pb-14">
+      <div className="relative overflow-hidden rounded-[22px] bg-brand-soft px-4 py-6 sm:rounded-[40px] sm:px-10 sm:py-16 lg:px-16 lg:py-[4.5rem]">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-brand-glow/15 blur-3xl"
+          className="pointer-events-none absolute -right-16 -top-20 h-36 w-36 rounded-full bg-brand-glow/15 blur-3xl sm:h-64 sm:w-64"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-brand/10 blur-3xl"
+          className="pointer-events-none absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-brand/10 blur-3xl sm:h-72 sm:w-72"
         />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          <h1 className="text-[1.75rem] font-extrabold leading-[1.15] tracking-tight text-brand sm:text-4xl lg:text-[2.65rem]">
+          <h1 className="text-[1.35rem] font-extrabold leading-[1.2] tracking-tight text-brand sm:text-4xl lg:text-[2.65rem]">
             Reference Listed Drugs (RLDs) and Comparator Sourcing for Pharmaceutical Development
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-body sm:text-[15px] sm:text-base">
+          <p className="mx-auto mt-2.5 max-w-2xl text-sm leading-relaxed text-slate-body sm:mt-4 sm:text-[15px] sm:text-base">
             SRA origin pharmaceutical reference products for bioequivalence studies,
             comparative dissolution testing and regulatory submissions
           </p>
 
-          <ul className="mx-auto mt-8 grid max-w-xl grid-cols-1 gap-x-10 gap-y-3 text-left sm:grid-cols-2">
+          <ul className="mx-auto mt-4 grid max-w-xl grid-cols-1 gap-x-10 gap-y-2 text-left sm:mt-8 sm:grid-cols-2 sm:gap-y-3">
             {HERO_BULLETS.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm font-medium text-brand">
                 <BulletDot />
@@ -51,7 +51,7 @@ export default function Hero() {
 
           <form
             onSubmit={onSubmit}
-            className="mx-auto mt-10 flex w-full max-w-2xl flex-col gap-3 rounded-2xl bg-white p-2 shadow-lg shadow-brand/5 sm:flex-row sm:items-center sm:rounded-full sm:gap-2 sm:p-1.5"
+            className="mx-auto mt-5 flex w-full max-w-2xl flex-col gap-2.5 rounded-2xl bg-white p-1.5 shadow-lg shadow-brand/5 sm:mt-10 sm:flex-row sm:items-center sm:rounded-full sm:gap-2 sm:p-1.5"
           >
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-soft" />

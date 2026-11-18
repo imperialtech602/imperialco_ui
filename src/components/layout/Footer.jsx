@@ -89,8 +89,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="relative mt-12 flex items-center justify-center">
-          <div className="flex items-center gap-5">
+        <div className="mt-12 flex flex-col items-center gap-4 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-3">
+          <div aria-hidden className="hidden sm:block" />
+          <div className="flex items-center justify-center gap-4 sm:gap-5">
             {SOCIAL.map(({ label, Icon, href }) => (
               <a
                 key={label}
@@ -104,14 +105,16 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => navigate(adminToken ? '/admin' : '/admin/login')}
-            className="absolute right-0 inline-flex h-9 items-center justify-center gap-2 rounded-full border border-brand/15 bg-white px-4 text-xs font-semibold text-brand transition hover:bg-brand hover:text-white"
-          >
-            <Lock className="h-3.5 w-3.5" />
-            {adminToken ? 'Admin' : 'Login'}
-          </button>
+          <div className="flex w-full justify-center sm:justify-end">
+            <button
+              type="button"
+              onClick={() => navigate(adminToken ? '/admin' : '/admin/login')}
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-brand/15 bg-white px-4 text-xs font-semibold text-brand transition hover:bg-brand hover:text-white"
+            >
+              <Lock className="h-3.5 w-3.5" />
+              {adminToken ? 'Admin' : 'Login'}
+            </button>
+          </div>
         </div>
       </div>
 

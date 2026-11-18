@@ -46,25 +46,25 @@ export default function InsightsPage() {
     <main id="top" className="font-article">
       <section className="container-page pt-6 pb-8 sm:pt-8 sm:pb-10">
         <div
-          className="relative overflow-hidden rounded-[40px] px-6 py-12 text-center sm:rounded-[56px] sm:px-10 sm:py-16 lg:rounded-[72px] lg:px-16 lg:py-[4.25rem]"
+          className="relative overflow-hidden rounded-[28px] px-5 py-7 text-center sm:rounded-[56px] sm:px-10 sm:py-16 lg:rounded-[72px] lg:px-16 lg:py-[4.25rem]"
           style={{
             background: 'linear-gradient(90deg, #dcdcf5 0%, #c8c8ef 48%, #b8b8e8 100%)',
           }}
         >
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/30 blur-3xl"
+            className="pointer-events-none absolute -right-16 -top-20 h-40 w-40 rounded-full bg-white/30 blur-3xl sm:h-64 sm:w-64"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-brand/10 blur-3xl"
+            className="pointer-events-none absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-brand/10 blur-3xl sm:h-72 sm:w-72"
           />
 
           <div className="relative mx-auto max-w-3xl">
-            <h1 className="text-[1.85rem] font-bold leading-[1.15] tracking-tight text-brand sm:text-4xl lg:text-[2.75rem]">
+            <h1 className="text-[1.5rem] font-bold leading-[1.15] tracking-tight text-brand sm:text-4xl lg:text-[2.75rem]">
               Knowledge Hub
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-brand sm:text-[15px] sm:leading-7 lg:text-base">
+            <p className="mx-auto mt-2.5 max-w-2xl text-sm leading-relaxed text-brand sm:mt-4 sm:text-[15px] sm:leading-7 lg:text-base">
               Best-practice articles for Regulatory Affairs, BE, and development teams working
               with comparator product and FDA-designated Reference Listed Drug (RLD) sourcing.
             </p>

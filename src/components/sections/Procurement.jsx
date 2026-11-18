@@ -25,12 +25,12 @@ export default function Procurement() {
 
         <div
           aria-hidden
-          className="relative mx-auto aspect-[452/705] w-full max-w-[452px] overflow-hidden rounded-[40px] lg:aspect-auto lg:h-[705px] lg:w-[452px]"
+          className="relative mx-auto aspect-[16/10] w-full max-w-[320px] overflow-hidden rounded-[24px] lg:aspect-auto lg:h-[705px] lg:w-[452px] lg:max-w-none lg:rounded-[40px]"
         >
           <img
             src={valueMesh}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover object-center"
           />
         </div>
       </div>
