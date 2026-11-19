@@ -4,7 +4,6 @@ import { fetchPublicPost } from '@/api/knowledge'
 import PostBlocks from '@/components/knowledge/PostBlocks'
 import TagPills from '@/components/knowledge/TagPills'
 import Button from '@/components/ui/Button'
-import { getStaticInsightBySlug } from '@/lib/insights'
 
 function formatArticleDate(value) {
   if (!value) return ''
@@ -17,7 +16,7 @@ function formatArticleDate(value) {
 
 export default function InsightPostPage() {
   const { slug } = useParams()
-  const [post, setPost] = useState(() => getStaticInsightBySlug(slug))
+  const [post, setPost] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -25,61 +24,19 @@ export default function InsightPostPage() {
     window.scrollTo(0, 0)
     setLoading(true)
     setError('')
-    const fallback = getStaticInsightBySlug(slug)
-    setPost(fallback)
+    setPost(null)
 
     fetchPublicPost(slug)
       .then((res) => {
         const data = res.data
-        if (!data?.title || /^new post$/i.test(String(data.title).trim())) {
-          if (fallback) {
-            setPost(fallback)
-            document.title = `${fallback.title} | Imperial Co`
-            return
-          }
+        if (!data?.title) {
+          setError('Post not found')
+          return
         }
-        const apiExcerpt = data.excerpt || ''
-        const tagLike =
-          fallback?.tags?.length &&
-          apiExcerpt &&
-          apiExcerpt
-            .split(/[,|/]/)
-            .map((part) => part.trim().toLowerCase())
-            .filter(Boolean)
-            .sort()
-            .join('|') ===
-            fallback.tags
-              .map((tag) => String(tag).trim().toLowerCase())
-              .filter(Boolean)
-              .sort()
-              .join('|')
-
-        // Prefer the canonical live-site static article body when present so
-        // abbreviated/stale API payloads cannot replace full content.
-        const preferStaticBlocks =
-          Boolean(fallback?.blocks?.length) &&
-          (fallback.blocks.length >= (data.blocks?.length || 0) ||
-            JSON.stringify(fallback.blocks).length >= JSON.stringify(data.blocks || []).length)
-
-        setPost({
-          ...data,
-          excerpt: tagLike || !apiExcerpt ? fallback?.excerpt || apiExcerpt : apiExcerpt,
-          tags: data.tags?.length ? data.tags : fallback?.tags || [],
-          blocks: preferStaticBlocks
-            ? fallback.blocks
-            : data.blocks?.length
-              ? data.blocks
-              : fallback?.blocks || [],
-          publishedAt: fallback?.publishedAt || data.publishedAt || null,
-        })
+        setPost(data)
         document.title = `${data.title} | Imperial Co`
       })
       .catch(() => {
-        if (fallback) {
-          setPost(fallback)
-          document.title = `${fallback.title} | Imperial Co`
-          return
-        }
         setError('Post not found')
       })
       .finally(() => setLoading(false))

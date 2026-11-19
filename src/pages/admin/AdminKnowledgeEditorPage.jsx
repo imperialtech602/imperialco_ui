@@ -86,6 +86,18 @@ function newKey() {
   return crypto.randomUUID()
 }
 
+function toSlugInput(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+/, '')
+    .slice(0, 80)
+}
+
+function toSlug(value) {
+  return toSlugInput(value).replace(/-+$/g, '')
+}
+
 function createBlock(kind) {
   if (kind === 'text') {
     return { clientKey: newKey(), type: 'text', heading: '', body: '' }
@@ -129,6 +141,7 @@ export default function AdminKnowledgeEditorPage() {
   const [loading, setLoading] = useState(!isNew)
   const [saving, setSaving] = useState(false)
   const [title, setTitle] = useState('')
+  const [slug, setSlug] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [tags, setTags] = useState([])
   const [status, setStatus] = useState('draft')
@@ -154,6 +167,7 @@ export default function AdminKnowledgeEditorPage() {
         if (!active) return
         const post = res.data
         setTitle(post.title || '')
+        setSlug(post.slug || toSlug(post.title || ''))
         setExcerpt(post.excerpt || '')
         setTags(tagsFromPost(post))
         setStatus(post.status || 'draft')
@@ -254,6 +268,7 @@ export default function AdminKnowledgeEditorPage() {
 
   const buildPayload = () => ({
     title: title.trim(),
+    slug: toSlug(slug) || toSlug(title),
     excerpt: excerpt.trim(),
     tags,
     status,
@@ -348,7 +363,8 @@ export default function AdminKnowledgeEditorPage() {
         })
         navigate(`/admin/knowledge/${res.data.id}`, { replace: true })
       } else {
-        await updateKnowledgePost(id, payload)
+        const res = await updateKnowledgePost(id, payload)
+        if (res?.data?.slug) setSlug(res.data.slug)
         refreshKnowledgeList()
         await Swal.fire({
           icon: 'success',
@@ -414,10 +430,30 @@ export default function AdminKnowledgeEditorPage() {
           <span className={labelClass}>Title</span>
           <input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value
+              setSlug((current) =>
+                !current || current === toSlug(title) ? toSlug(next) : current,
+              )
+              setTitle(next)
+            }}
             className={fieldClass}
             placeholder="What is a Reference Listed Drug (RLD)…"
           />
+        </label>
+        <label className="mt-4 block">
+          <span className={labelClass}>URL slug</span>
+          <input
+            value={slug}
+            onChange={(e) => setSlug(toSlugInput(e.target.value))}
+            onBlur={() => setSlug((current) => toSlug(current))}
+            className={fieldClass}
+            placeholder="reference-listed-drug-rld"
+            spellCheck={false}
+          />
+          <p className="mt-1.5 text-[11px] text-slate-soft">
+            Defaults to the title. Public link: /insights/{toSlug(slug) || toSlug(title) || 'your-slug'}.
+          </p>
         </label>
         <label className="mt-4 block">
           <span className={labelClass}>Short explanation (card summary)</span>

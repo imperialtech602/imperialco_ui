@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchPublicPosts } from '@/api/knowledge'
-import { getStaticInsights, mergeInsights } from '@/lib/insights'
 import Button from '@/components/ui/Button'
 
 function formatArticleDate(value) {
@@ -16,22 +15,24 @@ function formatArticleDate(value) {
 }
 
 export default function InsightsPage() {
-  const [posts, setPosts] = useState(() => getStaticInsights())
+  const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     window.scrollTo(0, 0)
     document.title = 'Knowledge Hub | Imperial Co'
     let active = true
 
-    fetchPublicPosts({ limit: 24 })
+    fetchPublicPosts({ limit: 50 })
       .then((res) => {
         if (!active) return
-        setPosts(mergeInsights(res.data?.items || []))
+        setPosts(res.data?.items || [])
       })
       .catch(() => {
         if (!active) return
-        setPosts(getStaticInsights())
+        setPosts([])
+        setError('Unable to load articles.')
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -85,6 +86,8 @@ export default function InsightsPage() {
       <section className="container-page pb-16">
         {loading && posts.length === 0 ? (
           <p className="text-center text-sm text-slate-body">Loading articles…</p>
+        ) : error ? (
+          <p className="text-center text-sm text-slate-body">{error}</p>
         ) : posts.length === 0 ? (
           <div className="rounded-[28px] bg-brand-muted px-6 py-12 text-center">
             <p className="text-sm text-slate-body">No published articles yet.</p>
