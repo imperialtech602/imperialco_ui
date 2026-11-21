@@ -55,8 +55,10 @@ export default function AdminKnowledgePage() {
     document.title = 'Knowledge Hub | Admin | Imperial Co'
   }, [])
 
-  const templates = posts.filter((post) => post.isTemplate)
-  const articles = posts.filter((post) => !post.isTemplate)
+  const byNewestAdded = (a, b) =>
+    new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+  const templates = posts.filter((post) => post.isTemplate).sort(byNewestAdded)
+  const articles = posts.filter((post) => !post.isTemplate).sort(byNewestAdded)
 
   const openEditor = (id) => {
     setChooserOpen(false)
@@ -155,52 +157,6 @@ export default function AdminKnowledgePage() {
         </Panel>
       ) : (
         <>
-          <section className="space-y-3">
-            <div className="flex items-center gap-2">
-              <LayoutTemplate className="h-4 w-4 text-brand" />
-              <h2 className="text-sm font-bold text-brand">Saved templates</h2>
-            </div>
-            {templates.length === 0 ? (
-              <Panel>
-                <p className="text-sm text-slate-body">
-                  No saved templates yet. Open a post and choose Save as template. New posts can
-                  also start from the boxed or banner layouts.
-                </p>
-              </Panel>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-2">
-                {templates.map((template) => (
-                  <Panel key={template.id}>
-                    <p className="text-sm font-bold text-brand">{template.title}</p>
-                    <CtaBasePills bases={template.ctaBases} />
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => startFromSaved(template)}
-                        disabled={starting === template.id}
-                      >
-                        {starting === template.id ? 'Starting…' : 'Use template'}
-                      </Button>
-                      <Link to={`/admin/knowledge/${template.id}`}>
-                        <Button size="sm" variant="secondary">
-                          Edit template
-                        </Button>
-                      </Link>
-                      <button
-                        type="button"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-600"
-                        onClick={() => onDelete(template)}
-                        aria-label={`Delete template ${template.title}`}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </Panel>
-                ))}
-              </div>
-            )}
-          </section>
-
           {articles.length === 0 ? (
             <EmptyState
               icon={BookOpen}
@@ -263,6 +219,52 @@ export default function AdminKnowledgePage() {
               </ul>
             </Panel>
           )}
+
+          <section className="space-y-3">
+            <div className="flex items-center gap-2">
+              <LayoutTemplate className="h-4 w-4 text-brand" />
+              <h2 className="text-sm font-bold text-brand">Saved templates</h2>
+            </div>
+            {templates.length === 0 ? (
+              <Panel>
+                <p className="text-sm text-slate-body">
+                  No saved templates yet. Open a post and choose Save as template. New posts can
+                  also start from the boxed or banner layouts.
+                </p>
+              </Panel>
+            ) : (
+              <div className="grid gap-3 md:grid-cols-2">
+                {templates.map((template) => (
+                  <Panel key={template.id}>
+                    <p className="text-sm font-bold text-brand">{template.title}</p>
+                    <CtaBasePills bases={template.ctaBases} />
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => startFromSaved(template)}
+                        disabled={starting === template.id}
+                      >
+                        {starting === template.id ? 'Starting…' : 'Use template'}
+                      </Button>
+                      <Link to={`/admin/knowledge/${template.id}`}>
+                        <Button size="sm" variant="secondary">
+                          Edit template
+                        </Button>
+                      </Link>
+                      <button
+                        type="button"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-50 text-red-600"
+                        onClick={() => onDelete(template)}
+                        aria-label={`Delete template ${template.title}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </Panel>
+                ))}
+              </div>
+            )}
+          </section>
         </>
       )}
 
